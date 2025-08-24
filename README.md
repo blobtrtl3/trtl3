@@ -11,23 +11,10 @@
 
 ## Trtl3
 
-> [!WARNING]
-> This repository was moved to organization blobtrtl3
-
-**Trtl3**🐢 is a local file storage service inspired by solutions like Amazon S3, and other blob
-storage systems. Designed for beginner developers who want to learn how object storage works in practice — without
+**Trtl3**🐢 is a file storage service designed for beginner developers who want to learn how object storage works in practice — without
 the complexity of cloud services or external dependencies.
 
 If you're building or experimenting with file uploads, downloads, and basic file organization via HTTP — Trtl3 is a great starting point!
-
----
-
-## 🚀 Features
-
-- 📦 **Buckets** – Organize objects into containers
-- 🧾 **Objects** – Upload and download files via REST API
-- 🔐 **Authentication** – Basic endpoint protection
-- ⚙️ **SDK's** – SDK's for golang and node
 
 ---
 
@@ -56,16 +43,4 @@ services:
 
 So you can use it with SDK's or REST.
 Go on [Trtl3 Docs](https://nothiaki.github.io/trtl3/docs/#/) to know more.
-
----
-
-## 📌 Roadmap
-
-Development plan for the project:
-
-- [ ] **trtl3-core**        `[████████████████░░░░] 80%`
-- [ ] **trtl3-golang-sdk**  `[████████████████░░░░] 80%`
-- [ ] **trtl3-node-sdk**    `[████████████████░░░░] 80%`
-- [ ] **trtl3-studio**      `[░░░░░░░░░░░░░░░░░░░░] 0%`
-- [ ] **web-docs**          `[████████████████░░░░] 80%`
 
