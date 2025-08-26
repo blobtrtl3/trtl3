@@ -1,4 +1,10 @@
 package storage
 
+import "github.com/blobtrtl3/trtl3/internal/domain"
+
 type Storage interface {
+	Save(bi *domain.BlobInfo, blob []byte) error
+	FindByID(id string) (*domain.BlobInfo, error)
+	FindByBucket(bucket string) ([]*domain.BlobInfo, error)
+	Delete(id string) error
 }
