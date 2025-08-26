@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type Blob struct {
+type BlobInfo struct {
 	ID        string    `json:"id"`
 	MimeType  int       `json:"mime_type"`
 	Size      int       `json:"size"`
