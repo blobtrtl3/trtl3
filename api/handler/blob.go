@@ -10,8 +10,8 @@ import (
 )
 
 type saveBlobRequest struct {
-  Bucket string `json:"bucket" binding:"required,alphanum"`
-  Mime   string `json:"mime" binding:"required,alphanum"`
+	Bucket string `json:"bucket" binding:"required,alphanum"`
+	Mime   string `json:"mime" binding:"required,alphanum"`
 }
 
 type Blob struct {
@@ -27,18 +27,18 @@ func NewBlob(s storage.Storage) *Blob {
 func (b *Blob) Save(c *gin.Context) {
 	var br saveBlobRequest
 	var bbytes []byte // TODO: take blob of request
-	
+
 	if err := c.ShouldBindJSON(&br); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "verirify the data you sent"})
 		return
 	}
-	
+
 	bi := &domain.BlobInfo{
-		ID: "a", // TODO: genID func shared
-		Bucket: br.Bucket,
-		Mime: br.Mime,
+		ID:        "a", // TODO: genID func shared
+		Bucket:    br.Bucket,
+		Mime:      br.Mime,
 		CreatedAt: time.Now(),
-		Size: 24, // TODO: calc blob size
+		Size:      24, // TODO: calc blob size
 	}
 
 	b.storage.Save(bi, &bbytes)
@@ -57,4 +57,3 @@ func (b *Blob) FindByBucket(c *gin.Context) {
 func (b *Blob) Delete(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "blob created"})
 }
-

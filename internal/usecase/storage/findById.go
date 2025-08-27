@@ -7,4 +7,3 @@ func (bs *BlobStorage) FindByID(id string) (*domain.BlobInfo, error) {
 
 	return &bi, nil
 }
-
