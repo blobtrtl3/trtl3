@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,7 +13,6 @@ import (
 
 type saveBlobRequest struct {
 	Bucket string `json:"bucket" binding:"required,alphanum"`
-	Mime   string `json:"mime" binding:"required,alphanum"`
 }
 
 type Blob struct {
@@ -30,6 +30,7 @@ func (b *Blob) Save(c *gin.Context) {
 	var bbytes []byte // TODO: take blob of request
 
 	if err := c.ShouldBindJSON(&br); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": "verirify the data you sent"})
 		return
 	}
@@ -37,7 +38,7 @@ func (b *Blob) Save(c *gin.Context) {
 	bi := &domain.BlobInfo{
 		ID:        shared.GenShortID(),
 		Bucket:    br.Bucket,
-		Mime:      br.Mime,
+		Mime:      "text/plain", // TODO: take mime from headers
 		CreatedAt: time.Now(),
 		Size:      24, // TODO: calc blob size
 	}

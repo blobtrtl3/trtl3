@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/blobtrtl3/trtl3/api/handler"
 	"github.com/blobtrtl3/trtl3/internal/db"
@@ -29,14 +30,18 @@ func main() {
 		log.Fatalf("Could not create database table, reason: %s", err)
 	}
 
+	if err := os.MkdirAll("/tmp/blobs", os.ModePerm); err != nil {
+		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
+  }
+
 	st := storage.NewBS(conn)
 
 	bh := handler.NewBlob(st)
 
-	r.POST("/blob", bh.Save)
-	r.GET("/blob", bh.FindByID)
-	r.GET("/blob", bh.FindByBucket)
-	r.DELETE("/blob", bh.Delete)
+	r.POST("/blobs", bh.Save)
+	r.GET("/blobs", bh.FindByID)
+	// r.GET("/blobs", bh.FindByBucket)
+	r.DELETE("/blobs", bh.Delete)
 
 	r.Run()
 }
