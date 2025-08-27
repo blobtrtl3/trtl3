@@ -26,7 +26,7 @@ func NewBlob(s storage.Storage) *Blob {
 
 func (b *Blob) Save(c *gin.Context) {
 	var br saveBlobRequest
-	var bbytes []byte
+	var bbytes []byte // TODO: take blob of request
 	
 	if err := c.ShouldBindJSON(&br); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "verirify the data you sent"})
@@ -34,7 +34,7 @@ func (b *Blob) Save(c *gin.Context) {
 	}
 	
 	bi := &domain.BlobInfo{
-		ID: "a",
+		ID: "a", // TODO: genID func shared
 		Bucket: br.Bucket,
 		Mime: br.Mime,
 		CreatedAt: time.Now(),

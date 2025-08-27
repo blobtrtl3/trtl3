@@ -22,21 +22,3 @@ func NewBS(db *sql.DB) Storage {
 		db: db,
 	}
 }
-
-func (bs *BlobStorage) Save(bi *domain.BlobInfo, blob *[]byte) error {
-	return nil
-}
-
-func (bs *BlobStorage) FindByID(id string) (*domain.BlobInfo, error) {
-	bi := domain.BlobInfo{}
-
-	return &bi, nil
-}
-
-func (bs *BlobStorage) FindByBucket(bucket string) ([]*domain.BlobInfo, error) {
-	return []*domain.BlobInfo{}, nil
-}
-
-func (bs *BlobStorage) Delete(id string) error {
-	return nil
-}
