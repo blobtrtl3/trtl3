@@ -7,7 +7,7 @@ import (
 )
 
 type Storage interface {
-	Save(bi *domain.BlobInfo, blob []byte) error
+	Save(bi *domain.BlobInfo, blob *[]byte) error
 	FindByID(id string) (*domain.BlobInfo, error)
 	FindByBucket(bucket string) ([]*domain.BlobInfo, error)
 	Delete(id string) error
@@ -23,7 +23,7 @@ func NewBS(db *sql.DB) Storage {
 	}
 }
 
-func (bs *BlobStorage) Save(bi *domain.BlobInfo, blob []byte) error {
+func (bs *BlobStorage) Save(bi *domain.BlobInfo, blob *[]byte) error {
 	return nil
 }
 
