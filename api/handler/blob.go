@@ -18,3 +18,16 @@ func NewBlob(s storage.Storage) *Blob {
 func (b *Blob) Save(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "blob created"})
 }
+
+func (b *Blob) FindByID(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "blob created"})
+}
+
+func (b *Blob) FindByBucket(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "blob created"})
+}
+
+func (b *Blob) Delete(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "blob created"})
+}
+

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/blobtrtl3/trtl3/api/handler"
 	"github.com/blobtrtl3/trtl3/internal/db"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
@@ -20,9 +18,9 @@ func main() {
 	bh := handler.NewBlob(st)
 
 	r.POST("/blob", bh.Save)
-	// r.GET("/blob", handler.SaveBlob)
-	// r.GET("/blob", handler.SaveBlob)
-	// r.DELETE("/blob", handler.DeleteBlob)
+	r.GET("/blob", bh.FindByID)
+	r.GET("/blob", bh.FindByBucket)
+	r.DELETE("/blob", bh.Delete)
 
 	r.Run()
 }
