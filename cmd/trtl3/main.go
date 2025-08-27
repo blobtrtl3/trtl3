@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/blobtrtl3/trtl3/api/handler"
 	"github.com/blobtrtl3/trtl3/internal/db"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
@@ -12,6 +14,20 @@ func main() {
 
 	conn := db.NewDbConn()
 	defer conn.Close()
+
+	_, err := conn.Exec(`
+    CREATE TABLE IF NOT EXISTS blobsinfo (
+      id TEXT NOT NULL,
+      bucket TEXT NOT NULL,
+      mime TEXT NOT NULL,
+      size INTEGER NOT NULL,
+      created_at TIMESTAMP,
+			PRIMARY KEY (id, bucket)
+    )
+	`)
+	if err != nil {
+		log.Fatalf("Could not create database table, reason: %s", err)
+	}
 
 	st := storage.NewBS(conn)
 
