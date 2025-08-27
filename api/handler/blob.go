@@ -6,6 +6,7 @@ import (
 
 	"github.com/blobtrtl3/trtl3/internal/domain"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
+	"github.com/blobtrtl3/trtl3/shared"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,7 +35,7 @@ func (b *Blob) Save(c *gin.Context) {
 	}
 
 	bi := &domain.BlobInfo{
-		ID:        "a", // TODO: genID func shared
+		ID:        shared.GenShortID(),
 		Bucket:    br.Bucket,
 		Mime:      br.Mime,
 		CreatedAt: time.Now(),
