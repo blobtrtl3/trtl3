@@ -42,5 +42,5 @@ services:
 ```
 
 So you can use it with SDK's or REST.
-Go on [Trtl3 Docs](https://nothiaki.github.io/trtl3/docs/#/) to know more.
+Go on [Trtl3 Docs Website](https://blobtrtl3.github.io/) to know more.
 
