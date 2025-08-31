@@ -43,9 +43,13 @@ func (b *Blob) Save(c *gin.Context) {
 		Size:      24, // TODO: calc blob size
 	}
 
-	b.storage.Save(bi, &bbytes)
+	_, err := b.storage.Save(bi, &bbytes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "could not save the blob, try again"})
+		return
+	}
 
-	c.JSON(200, gin.H{"message": "blob created"})
+	c.JSON(200, bi)
 }
 
 func (b *Blob) FindByBucketOrID(c *gin.Context) {
