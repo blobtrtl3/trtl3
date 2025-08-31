@@ -85,7 +85,8 @@ func (b *Blob) Delete(c *gin.Context) {
 		return
   }
 
-	if err := b.storage.Delete(id); err != nil {
+	_, err := b.storage.Delete(id)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob by with id: %s", id)})
 		return
 	}
