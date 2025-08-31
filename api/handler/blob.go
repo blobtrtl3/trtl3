@@ -31,7 +31,7 @@ func (b *Blob) Save(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&br); err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{"message": "verirify the data you sent"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the data you sent"})
 		return
 	}
 
@@ -48,12 +48,33 @@ func (b *Blob) Save(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "blob created"})
 }
 
-func (b *Blob) FindByID(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "blob created"})
-}
+func (b *Blob) FindByBucketOrID(c *gin.Context) {
+	id := c.Query("id")
+  bucket := c.Query("bucket")
 
-func (b *Blob) FindByBucket(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "blob created"})
+  if id != "" { // then it will find using id
+		blob, err := b.storage.FindByID(id)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob by with id: %s", id)})
+			return
+		}
+
+		c.JSON(http.StatusOK, blob)
+		return
+  }
+
+	if bucket != "" { // then it will find using bucket
+		blobs, err := b.storage.FindByBucket(bucket)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s", bucket)})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"blobs": blobs})
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id"})
 }
 
 func (b *Blob) Delete(c *gin.Context) {
