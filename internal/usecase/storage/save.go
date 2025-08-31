@@ -9,6 +9,7 @@ import (
 
 func (bs *BlobStorage) Save(bi *domain.BlobInfo, blob *[]byte) (bool, error) {
 	var existID bool
+	// TODO: delete by bucket and id
 	if err := bs.db.QueryRow("SELECT EXISTS(SELECT 1 FROM blobsinfo WHERE id=?)", bi.ID).Scan(&existID); err != nil {
 		return false, err
 	}
