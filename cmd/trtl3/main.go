@@ -39,7 +39,7 @@ func main() {
 	bh := handler.NewBlob(st)
 
 	r.POST("/blobs", bh.Save)
-	r.GET("/blobs", bh.FindByBucketAndID)
+	r.GET("/blobs", bh.FindByBucketOrID)
 	r.DELETE("/blobs", bh.Delete)
 
 	r.Run()

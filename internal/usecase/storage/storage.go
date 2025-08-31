@@ -8,6 +8,7 @@ import (
 
 type Storage interface {
 	Save(bi *domain.BlobInfo, blob *[]byte) (bool, error)
+	FindByBucket(bucket string) (*[]domain.BlobInfo, error)
 	FindByBucketAndID(bucket string, id string) (*domain.BlobInfo, error)
 	Delete(id string) (bool, error)
 }
