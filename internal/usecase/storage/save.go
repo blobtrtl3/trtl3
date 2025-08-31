@@ -14,9 +14,9 @@ func (bs *BlobStorage) Save(bi *domain.BlobInfo, blob *[]byte) (bool, error) {
 		return false, err
 	}
 
-  if existID {
-    return false, fmt.Errorf("blob with id %s already exists", bi.ID)
-  }
+	if existID {
+		return false, fmt.Errorf("blob with id %s already exists", bi.ID)
+	}
 
 	_, err := bs.db.Exec(
 		"INSERT INTO blobsinfo VALUES(?, ?, ?, ?, ?)",
@@ -40,4 +40,3 @@ func (bs *BlobStorage) Save(bi *domain.BlobInfo, blob *[]byte) (bool, error) {
 
 	return true, nil
 }
-

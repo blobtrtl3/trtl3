@@ -32,7 +32,7 @@ func main() {
 
 	if err := os.MkdirAll("/tmp/blobs", os.ModePerm); err != nil {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
-  }
+	}
 
 	st := storage.NewBS(conn)
 

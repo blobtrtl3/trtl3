@@ -12,9 +12,9 @@ func (bs *BlobStorage) FindByBucket(bucket string) (*[]domain.BlobInfo, error) {
 	var bis []domain.BlobInfo
 
 	for rows.Next() {
-  	var bi domain.BlobInfo
+		var bi domain.BlobInfo
 
-  	if err := rows.Scan(&bi.ID, &bi.Bucket, &bi.Mime, &bi.Size, &bi.CreatedAt); err != nil {
+		if err := rows.Scan(&bi.ID, &bi.Bucket, &bi.Mime, &bi.Size, &bi.CreatedAt); err != nil {
 			return nil, err
 		}
 
