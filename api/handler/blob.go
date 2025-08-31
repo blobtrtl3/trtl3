@@ -53,8 +53,8 @@ func (b *Blob) Save(c *gin.Context) {
 }
 
 func (b *Blob) FindByBucketOrID(c *gin.Context) {
-	id := c.Query("id")
   bucket := c.Query("bucket")
+	id := c.Query("id")
 
   if id == "" && bucket == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id sent"})
@@ -88,16 +88,17 @@ func (b *Blob) FindByBucketOrID(c *gin.Context) {
 }
 
 func (b *Blob) Delete(c *gin.Context) {
+	bucket := c.Query("bucket")
 	id := c.Query("id")
 
-  if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the id sent"})
+  if bucket == "" && id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id sent"})
 		return
   }
 
-	_, err := b.storage.Delete(id)
+	_, err := b.storage.Delete(bucket, id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob by with id: %s", id)})
+		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob by in bucket: %s with id: %s", bucket, id)})
 		return
 	}
 
