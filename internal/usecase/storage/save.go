@@ -5,17 +5,22 @@ import (
 	"os"
 
 	"github.com/blobtrtl3/trtl3/internal/domain"
+	"github.com/blobtrtl3/trtl3/shared"
 )
 
 func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes *[]byte) (bool, error) {
-	var existID bool
+	var exists bool
 
-	if err := bs.db.QueryRow("SELECT EXISTS(SELECT 1 FROM blobsinfo WHERE id=?)", blobInfo.ID).Scan(&existID); err != nil {
+	if err := bs.db.QueryRow(
+		"SELECT EXISTS(SELECT 1 FROM blobsinfo WHERE id=? AND bucket=?)",
+		blobInfo.ID, blobInfo.Bucket,
+	).Scan(&exists); err != nil {
 		return false, err
 	}
 
-	if existID {
-		return false, fmt.Errorf("blob with id %s already exists", blobInfo.ID)
+	if exists {
+		blobInfo.ID = shared.GenShortID()
+		return bs.Save(blobInfo, blobBytes)
 	}
 
 	_, err := bs.db.Exec(
