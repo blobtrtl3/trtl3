@@ -56,9 +56,9 @@ func (b *Blob) Save(c *gin.Context) {
 	bi := &domain.BlobInfo{
 		ID:        shared.GenShortID(),
 		Bucket:    br.Bucket,
-		Mime:      "text/plain", // TODO: take mime from headers
+		Mime:      blob.Header.Get("Content-Type"),
 		CreatedAt: time.Now(),
-		Size:      int(int64(blob.Size) / 1048576), // NOTE: blob.Size return value in bytes so I did it to be an MB value 1048576 = 1024^2
+		Size:      int(int64(blob.Size) / 1024), // NOTE: blob.Size return value in bytes so I did it to be an KB value
 	}
 
 	_, err = b.storage.Save(bi, &bodyBytes)
