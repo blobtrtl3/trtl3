@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/blobtrtl3/trtl3/api/handler"
+	handler "github.com/blobtrtl3/trtl3/api/handler/blob"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
 	"github.com/gin-gonic/gin"
