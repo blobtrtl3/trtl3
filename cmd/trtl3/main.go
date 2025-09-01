@@ -40,9 +40,13 @@ func main() {
 
 	r.POST("/blobs", blobHandler.Save)
 	r.GET("/blobs", blobHandler.FindByBucketOrID)
+	// r.GET("/blobs", blobHandler.FindByBucket)
+	// r.GET("/blobs/:id", blobHandler.FindByID)
 	r.DELETE("/blobs", blobHandler.Delete)
 
-	r.Static("/blobs", "/tmp/blobs")
+	r.GET("/blobs/download/:id", blobHandler.DownloadByID)
+
+	r.Static("/b", "/tmp/blobs")
 
 	r.Run(":7713")
 }

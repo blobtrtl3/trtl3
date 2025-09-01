@@ -11,6 +11,7 @@ type Storage interface {
 	FindByBucket(bucket string) (*[]domain.BlobInfo, error)
 	FindByBucketAndID(bucket string, id string) (*domain.BlobInfo, error)
 	Delete(bucket string, id string) (bool, error)
+	DownloadByID(id string) (*[]byte, error)
 }
 
 type BlobStorage struct {
