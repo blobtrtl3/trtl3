@@ -34,13 +34,13 @@ func main() {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
 	}
 
-	st := storage.NewBS(conn)
+	storage := storage.NewBS(conn)
 
-	bh := handler.NewBlob(st)
+	blobHandler := handler.NewBlob(storage)
 
-	r.POST("/blobs", bh.Save)
-	r.GET("/blobs", bh.FindByBucketOrID)
-	r.DELETE("/blobs", bh.Delete)
+	r.POST("/blobs", blobHandler.Save)
+	r.GET("/blobs", blobHandler.FindByBucketOrID)
+	r.DELETE("/blobs", blobHandler.Delete)
 
-	r.Run()
+	r.Run(":7713")
 }

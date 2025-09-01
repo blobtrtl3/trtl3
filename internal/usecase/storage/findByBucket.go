@@ -9,17 +9,17 @@ func (bs *BlobStorage) FindByBucket(bucket string) (*[]domain.BlobInfo, error) {
 	}
 	defer rows.Close()
 
-	var bis []domain.BlobInfo
+	var blobsInfos []domain.BlobInfo
 
 	for rows.Next() {
-		var bi domain.BlobInfo
+		var blobInfo domain.BlobInfo
 
-		if err := rows.Scan(&bi.ID, &bi.Bucket, &bi.Mime, &bi.Size, &bi.CreatedAt); err != nil {
+		if err := rows.Scan(&blobInfo.ID, &blobInfo.Bucket, &blobInfo.Mime, &blobInfo.Size, &blobInfo.CreatedAt); err != nil {
 			return nil, err
 		}
 
-		bis = append(bis, bi)
+		blobsInfos = append(blobsInfos, blobInfo)
 	}
 
-	return &bis, nil
+	return &blobsInfos, nil
 }

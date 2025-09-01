@@ -12,65 +12,65 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type saveBlobRequest struct {
+type saveBlobReq struct {
 	Bucket string `form:"bucket" binding:"required,alphanum"`
 }
 
-type Blob struct {
+type BlobHandler struct {
 	storage storage.Storage
 }
 
-func NewBlob(s storage.Storage) *Blob {
-	return &Blob{
+func NewBlob(s storage.Storage) *BlobHandler {
+	return &BlobHandler{
 		storage: s,
 	}
 }
 
-func (b *Blob) Save(c *gin.Context) {
-	var br saveBlobRequest
+func (bh *BlobHandler) Save(c *gin.Context) {
+	var req saveBlobReq
 
-	if err := c.ShouldBind(&br); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the data you sent"})
 		return
 	}
 
-	blob, err := c.FormFile("blob")
+	blobMultipart, err := c.FormFile("blob")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "could not open the blob that you sent"})
 		return
 	}
 
-	inMemBlob, err := blob.Open()
+	inMemBlob, err := blobMultipart.Open()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, we had an error, try again"})
 		return
 	}
 	defer inMemBlob.Close()
 
-	bodyBytes, err := io.ReadAll(inMemBlob)
+	blobBytes, err := io.ReadAll(inMemBlob)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, we had an error, try again"})
 		return
 	}
 
-	bi := &domain.BlobInfo{
+	blobInfo := &domain.BlobInfo{
 		ID:        shared.GenShortID(),
-		Bucket:    br.Bucket,
-		Mime:      blob.Header.Get("Content-Type"),
+		Bucket:    req.Bucket,
+		Mime:      blobMultipart.Header.Get("Content-Type"),
 		CreatedAt: time.Now(),
-		Size:      int(int64(blob.Size) / 1024), // NOTE: blob.Size return value in bytes so I did it to be an KB value
+		Size:      int(int64(blobMultipart.Size) / 1024), // NOTE: blob.Size return value in bytes so I did it to be an KB value
 	}
 
-	_, err = b.storage.Save(bi, &bodyBytes)
+	_, err = bh.storage.Save(blobInfo, &blobBytes)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "could not save the blob, try again"})
 		return
 	}
 
-	c.JSON(200, bi)
+	c.JSON(200, blobInfo)
 }
 
-func (b *Blob) FindByBucketOrID(c *gin.Context) {
+func (bh *BlobHandler) FindByBucketOrID(c *gin.Context) {
 	bucket := c.Query("bucket")
 	id := c.Query("id")
 
@@ -80,32 +80,32 @@ func (b *Blob) FindByBucketOrID(c *gin.Context) {
 	}
 
 	if id == "" && bucket != "" { // then find only by bucket
-		blobs, err := b.storage.FindByBucket(bucket)
+		blobsInfos, err := bh.storage.FindByBucket(bucket)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s", bucket)})
 			return
 		}
 
-		if blobs == nil {
+		if blobsInfos == nil {
 			c.JSON(http.StatusOK, gin.H{"blobs": ""})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"blobs": blobs})
+		c.JSON(http.StatusOK, gin.H{"blobs": blobsInfos})
 		return
 	}
 	// here find by bucket and id
 
-	blob, err := b.storage.FindByBucketAndID(bucket, id)
+	blobInfo, err := bh.storage.FindByBucketAndID(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s with id: %s", bucket, id)})
 		return
 	}
 
-	c.JSON(http.StatusOK, blob)
+	c.JSON(http.StatusOK, blobInfo)
 }
 
-func (b *Blob) Delete(c *gin.Context) {
+func (bh *BlobHandler) Delete(c *gin.Context) {
 	bucket := c.Query("bucket")
 	id := c.Query("id")
 
@@ -114,7 +114,7 @@ func (b *Blob) Delete(c *gin.Context) {
 		return
 	}
 
-	_, err := b.storage.Delete(bucket, id)
+	_, err := bh.storage.Delete(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob by in bucket: %s with id: %s", bucket, id)})
 		return
