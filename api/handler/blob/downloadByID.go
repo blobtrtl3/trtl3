@@ -21,6 +21,10 @@ func (bh *BlobHandler) DownloadByID(c *gin.Context) {
 		return
 	}
 
-	//TODO ta enviando como string
-	c.JSON(http.StatusOK, blobBytes)
+  c.Data(
+    http.StatusOK,
+    "application/octet-stream",
+    *blobBytes,
+  )
+
 }
