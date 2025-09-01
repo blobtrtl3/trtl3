@@ -41,7 +41,7 @@ func main() {
 	r.POST("/blobs", blobHandler.Save)
 	r.GET("/blobs", blobHandler.FindByBucket)
 	r.GET("/blobs/:bucket/:id", blobHandler.FindByBucketAndID)
-	r.DELETE("/blobs", blobHandler.Delete)
+	r.DELETE("/blobs/:bucket/:id", blobHandler.Delete)
 
 	r.GET("/blobs/download/:id", blobHandler.DownloadByID)
 

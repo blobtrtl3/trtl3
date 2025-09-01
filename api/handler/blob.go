@@ -111,8 +111,8 @@ func (bh *BlobHandler) FindByBucketAndID(c *gin.Context) {
 }
 
 func (bh *BlobHandler) Delete(c *gin.Context) {
-	bucket := c.Query("bucket")
-	id := c.Query("id")
+	bucket := c.Param("bucket")
+	id := c.Param("id")
 
 	if bucket == "" && id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id sent"})
