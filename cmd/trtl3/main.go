@@ -42,5 +42,7 @@ func main() {
 	r.GET("/blobs", blobHandler.FindByBucketOrID)
 	r.DELETE("/blobs", blobHandler.Delete)
 
+	r.Static("/blobs", "/tmp/blobs")
+
 	r.Run(":7713")
 }
