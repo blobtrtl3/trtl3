@@ -39,9 +39,8 @@ func main() {
 	blobHandler := handler.NewBlob(storage)
 
 	r.POST("/blobs", blobHandler.Save)
-	r.GET("/blobs", blobHandler.FindByBucketOrID)
-	// r.GET("/blobs", blobHandler.FindByBucket)
-	// r.GET("/blobs/:id", blobHandler.FindByID)
+	r.GET("/blobs", blobHandler.FindByBucket)
+	r.GET("/blobs/:bucket/:id", blobHandler.FindByBucketAndID)
 	r.DELETE("/blobs", blobHandler.Delete)
 
 	r.GET("/blobs/download/:id", blobHandler.DownloadByID)

@@ -70,31 +70,36 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 	c.JSON(200, blobInfo)
 }
 
-func (bh *BlobHandler) FindByBucketOrID(c *gin.Context) {
+func (bh *BlobHandler) FindByBucket(c *gin.Context) {
 	bucket := c.Query("bucket")
-	id := c.Query("id")
+
+	if bucket == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket sent"})
+		return
+	}
+
+	blobsInfos, err := bh.storage.FindByBucket(bucket)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s", bucket)})
+		return
+	}
+
+	if blobsInfos == nil {
+		c.JSON(http.StatusOK, gin.H{"blobs": ""})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"blobs": blobsInfos})
+}
+
+func (bh *BlobHandler) FindByBucketAndID(c *gin.Context) {
+	bucket := c.Param("bucket")
+	id := c.Param("id")
 
 	if id == "" && bucket == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id sent"})
 		return
 	}
-
-	if id == "" && bucket != "" { // then find only by bucket
-		blobsInfos, err := bh.storage.FindByBucket(bucket)
-		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s", bucket)})
-			return
-		}
-
-		if blobsInfos == nil {
-			c.JSON(http.StatusOK, gin.H{"blobs": ""})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"blobs": blobsInfos})
-		return
-	}
-	// here find by bucket and id
 
 	blobInfo, err := bh.storage.FindByBucketAndID(bucket, id)
 	if err != nil {
