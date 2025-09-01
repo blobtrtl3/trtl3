@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/blobtrtl3/trtl3/api/handler"
-	"github.com/blobtrtl3/trtl3/internal/db"
+	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
 	"github.com/gin-gonic/gin"
 )
