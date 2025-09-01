@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 )
 
 type saveBlobRequest struct {
-	Bucket string `json:"bucket" binding:"required,alphanum"`
+	Bucket string `form:"bucket" binding:"required,alphanum"`
 }
 
 type Blob struct {
@@ -27,11 +28,28 @@ func NewBlob(s storage.Storage) *Blob {
 
 func (b *Blob) Save(c *gin.Context) {
 	var br saveBlobRequest
-	var bbytes []byte // TODO: take blob of request
 
-	if err := c.ShouldBindJSON(&br); err != nil {
-		fmt.Println(err)
+	if err := c.ShouldBind(&br); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the data you sent"})
+		return
+	}
+
+	blob, err := c.FormFile("blob")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "could not open the blob that you sent"})
+		return
+	}
+
+	inMemBlob, err := blob.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, we had an error, try again"})
+		return
+	}
+	defer inMemBlob.Close()
+
+	bodyBytes, err := io.ReadAll(inMemBlob)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, we had an error, try again"})
 		return
 	}
 
@@ -40,10 +58,10 @@ func (b *Blob) Save(c *gin.Context) {
 		Bucket:    br.Bucket,
 		Mime:      "text/plain", // TODO: take mime from headers
 		CreatedAt: time.Now(),
-		Size:      24, // TODO: calc blob size
+		Size:      int(int64(blob.Size) / 1048576), // NOTE: blob.Size return value in bytes so I did it to be an MB value 1048576 = 1024^2
 	}
 
-	_, err := b.storage.Save(bi, &bbytes)
+	_, err = b.storage.Save(bi, &bodyBytes)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "could not save the blob, try again"})
 		return
