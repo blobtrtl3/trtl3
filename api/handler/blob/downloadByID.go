@@ -21,10 +21,10 @@ func (bh *BlobHandler) DownloadByID(c *gin.Context) {
 		return
 	}
 
-  c.Data(
-    http.StatusOK,
-    "application/octet-stream",
-    blobBytes,
-  )
+	c.Data(
+		http.StatusOK,
+		"application/octet-stream",
+		blobBytes,
+	)
 
 }

@@ -13,4 +13,3 @@ func NewBlob(s storage.Storage) *BlobHandler {
 		storage: s,
 	}
 }
-

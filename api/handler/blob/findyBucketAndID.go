@@ -24,5 +24,3 @@ func (bh *BlobHandler) FindByBucketAndID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, blobInfo)
 }
-
-

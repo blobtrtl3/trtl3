@@ -24,4 +24,3 @@ func (bh *BlobHandler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "blob deleted"})
 }
-
