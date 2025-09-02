@@ -8,7 +8,7 @@ import (
 	"github.com/blobtrtl3/trtl3/shared"
 )
 
-func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes *[]byte) (bool, error) {
+func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, error) {
 	var exists bool
 
 	if err := bs.db.QueryRow(
@@ -37,7 +37,7 @@ func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes *[]byte) (bool,
 
 	if err := os.WriteFile(
 		fmt.Sprintf("/tmp/blobs/%s", blobInfo.ID),
-		*blobBytes,
+		blobBytes,
 		os.ModePerm,
 	); err != nil {
 		return false, err

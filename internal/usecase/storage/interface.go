@@ -7,11 +7,11 @@ import (
 )
 
 type Storage interface {
-	Save(blobInfo *domain.BlobInfo, blobBytes *[]byte) (bool, error)
-	FindByBucket(bucket string) (*[]domain.BlobInfo, error)
+	Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, error)
+	FindByBucket(bucket string) ([]domain.BlobInfo, error)
 	FindByBucketAndID(bucket string, id string) (*domain.BlobInfo, error)
 	Delete(bucket string, id string) (bool, error)
-	DownloadByID(id string) (*[]byte, error)
+	DownloadByID(id string) ([]byte, error)
 }
 
 type BlobStorage struct {

@@ -2,7 +2,7 @@ package storage
 
 import "github.com/blobtrtl3/trtl3/internal/domain"
 
-func (bs *BlobStorage) FindByBucket(bucket string) (*[]domain.BlobInfo, error) {
+func (bs *BlobStorage) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
 	rows, err := bs.db.Query("SELECT * FROM blobsinfo WHERE bucket=?", bucket)
 	if err != nil {
 		return nil, err
@@ -21,5 +21,5 @@ func (bs *BlobStorage) FindByBucket(bucket string) (*[]domain.BlobInfo, error) {
 		blobsInfos = append(blobsInfos, blobInfo)
 	}
 
-	return &blobsInfos, nil
+	return blobsInfos, nil
 }
