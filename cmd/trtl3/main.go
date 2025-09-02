@@ -5,6 +5,7 @@ import (
 	"os"
 
 	handler "github.com/blobtrtl3/trtl3/api/handler/blob"
+	"github.com/blobtrtl3/trtl3/api/middleware"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
 	"github.com/gin-gonic/gin"
@@ -38,12 +39,14 @@ func main() {
 
 	blobHandler := handler.NewBlob(storage)
 
-	r.POST("/blobs", blobHandler.Save)
-	r.GET("/blobs", blobHandler.FindByBucket)
-	r.GET("/blobs/:bucket/:id", blobHandler.FindByBucketAndID)
-	r.DELETE("/blobs/:bucket/:id", blobHandler.Delete)
+	protected := r.Group("/blobs", middleware.AuthMiddleware())
 
-	r.GET("/blobs/download/:id", blobHandler.DownloadByID)
+	protected.POST("", blobHandler.Save)
+	protected.GET("", blobHandler.FindByBucket)
+	protected.GET("/:bucket/:id", blobHandler.FindByBucketAndID)
+	protected.DELETE("/:bucket/:id", blobHandler.Delete)
+
+	protected.GET("/blobs/download/:id", blobHandler.DownloadByID)
 
 	r.Static("/b", "/tmp/blobs")
 
