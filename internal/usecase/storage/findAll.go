@@ -2,8 +2,8 @@ package storage
 
 import "github.com/blobtrtl3/trtl3/internal/domain"
 
-func (bs *BlobStorage) FindAll(bucket string) ([]domain.BlobInfo, error) {
-	rows, err := bs.db.Query("SELECT * FROM blobsinfo", bucket)
+func (bs *BlobStorage) FindAll() ([]domain.BlobInfo, error) {
+	rows, err := bs.db.Query("SELECT * FROM blobsinfo")
 	if err != nil {
 		return nil, err
 	}
