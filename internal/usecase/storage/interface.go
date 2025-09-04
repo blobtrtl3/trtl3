@@ -18,7 +18,7 @@ type BlobStorage struct {
 	db *sql.DB
 }
 
-func NewBS(db *sql.DB) Storage {
+func NewBlobStorage(db *sql.DB) Storage {
 	return &BlobStorage{
 		db: db,
 	}

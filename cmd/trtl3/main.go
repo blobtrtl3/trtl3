@@ -35,7 +35,7 @@ func main() {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
 	}
 
-	storage := storage.NewBS(conn)
+	storage := storage.NewBlobStorage(conn)
 
 	blobHandler := handler.NewBlob(storage)
 
