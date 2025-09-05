@@ -3,11 +3,14 @@ package main
 import (
 	"log"
 	"os"
+	"path/filepath"
+	"time"
 
 	handler "github.com/blobtrtl3/trtl3/api/handler/blob"
 	"github.com/blobtrtl3/trtl3/api/middleware"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
+	"github.com/blobtrtl3/trtl3/internal/worker"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,8 +33,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not create database table, reason: %s", err)
 	}
+	
+	var path = filepath.Join(os.TempDir() + "blobs")
 
-	if err := os.MkdirAll("/tmp/blobs", os.ModePerm); err != nil {
+	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
 	}
 
@@ -48,7 +53,10 @@ func main() {
 
 	protected.GET("/blobs/download/:id", blobHandler.DownloadByID)
 
-	r.Static("/b", "/tmp/blobs")
+	r.Static("/b", path)
+
+	worker := worker.NewWorker(storage, path)
+	go worker.Start(5 * time.Minute)
 
 	r.Run(":7713")
 }
