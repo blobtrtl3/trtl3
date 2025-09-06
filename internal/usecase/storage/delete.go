@@ -21,7 +21,7 @@ func (bs *BlobStorage) Delete(bucket string, id string) (bool, error) {
 		return false, err
 	}
 
-	if err := os.Remove(fmt.Sprintf("/tmp/blobs/%s", id)); err != nil {
+	if err := os.Remove(fmt.Sprintf("/tmp/blobs/%s_%s", bucket, id)); err != nil {
 		tx.Rollback()
 		return false, err
 	}

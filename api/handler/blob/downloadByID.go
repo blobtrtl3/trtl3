@@ -14,7 +14,7 @@ import (
 // @Param        Authorization header string true "Access token" default("")
 // @Param 			 bucket path string true "Bucket name"
 // @Param 			 id path string true "Blob id"
-// @Success      200 {object}
+// @Success 		 200 {file} file "Binary file"
 // @Router       /blobs/download/{bucket}/{id} [get]
 func (bh *BlobHandler) DownloadByID(c *gin.Context) {
 	bucket := c.Param("bucket")

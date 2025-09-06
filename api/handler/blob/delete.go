@@ -14,9 +14,8 @@ import (
 // @Param        Authorization header string true "Access token" default("")
 // @Param 			 bucket path string true "Bucket name"
 // @Param 			 id path string true "Blob id"
-// @Success      200 {object}
+// @Success      200
 // @Router       /blobs/{bucket}/{id} [get]
-
 func (bh *BlobHandler) Delete(c *gin.Context) {
 	bucket := c.Param("bucket")
 	id := c.Param("id")
