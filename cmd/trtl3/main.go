@@ -15,6 +15,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @title Trtl3 API
+// @version 1.0
+// @description Blob storage api
 func main() {
 	r := gin.Default()
 
