@@ -22,9 +22,6 @@ type saveBlobReq struct {
 // @Param        bucket formData string true "Bucket name"
 // @Param        blob formData file true "Blob file"
 // @Success      201 {object} domain.BlobInfo
-// @Failure      400 {object} gin.H
-// @Failure      401 {object} gin.H
-// @Failure      500 {object} gin.H
 // @Router       /blobs [post]
 func (bh *BlobHandler) Save(c *gin.Context) {
 	var req saveBlobReq

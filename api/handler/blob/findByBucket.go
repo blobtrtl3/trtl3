@@ -7,6 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Find blobs by bucket
+// @Description  Find all blobs inside a bucket
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Access token" default("")
+// @Param        bucket query string true "Bucket name"
+// @Success      200 {object} []domain.BlobInfo
+// @Router       /blobs [get]
 func (bh *BlobHandler) FindByBucket(c *gin.Context) {
 	bucket := c.Query("bucket")
 
