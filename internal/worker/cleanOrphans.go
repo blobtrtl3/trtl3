@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
+	"github.com/blobtrtl3/trtl3/shared"
 )
 
 type Worker struct {
@@ -38,7 +39,7 @@ func (w *Worker) cleanOrphans() {
 	}
 
 	for _, bi := range blobsinfos {
-		path := filepath.Join(w.dir, fmt.Sprintf("%s_%s", bi.Bucket, bi.ID))
+		path := filepath.Join(w.dir, shared.GenBlobName(bi.Bucket, bi.ID))
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			log.Printf("[worker] orphan found (id: %s, bucket: %s)", bi.ID, bi.Bucket)

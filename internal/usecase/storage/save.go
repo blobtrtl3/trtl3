@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/blobtrtl3/trtl3/internal/domain"
 	"github.com/blobtrtl3/trtl3/shared"
@@ -36,7 +36,7 @@ func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, 
 	}
 
 	if err := os.WriteFile(
-		fmt.Sprintf("/tmp/blobs/%s_%s", blobInfo.Bucket, blobInfo.ID),
+		filepath.Join(bs.dir, shared.GenBlobName(blobInfo.Bucket, blobInfo.ID)),
 		blobBytes,
 		os.ModePerm,
 	); err != nil {
