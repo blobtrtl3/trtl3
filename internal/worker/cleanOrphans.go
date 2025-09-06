@@ -13,7 +13,7 @@ import (
 
 type Worker struct {
 	storage storage.Storage
-	dir string
+	dir     string
 }
 
 func NewWorker(storage storage.Storage, dir string) *Worker {
@@ -51,4 +51,3 @@ func (w *Worker) cleanOrphans() {
 		}
 	}
 }
-

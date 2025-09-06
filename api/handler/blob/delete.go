@@ -10,7 +10,7 @@ import (
 // @Summary      Delete blob
 // @Description  Delete a single blob by using the bucket and id
 // @Accept       json
-// @Produce      json 
+// @Produce      json
 // @Param        Authorization header string true "Access token" default("")
 // @Param 			 bucket path string true "Bucket name"
 // @Param 			 id path string true "Blob id"

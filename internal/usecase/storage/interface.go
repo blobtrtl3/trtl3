@@ -16,13 +16,13 @@ type Storage interface {
 }
 
 type BlobStorage struct {
-	db *sql.DB
+	db  *sql.DB
 	dir string
 }
 
 func NewBlobStorage(db *sql.DB, dir string) Storage {
 	return &BlobStorage{
-		db: db,
+		db:  db,
 		dir: dir,
 	}
 }

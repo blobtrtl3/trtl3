@@ -39,7 +39,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not create database table, reason: %s", err)
 	}
-	
+
 	var path = filepath.Join(os.TempDir(), "blobs")
 
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
