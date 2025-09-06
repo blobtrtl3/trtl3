@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -16,6 +17,11 @@ import (
 
 func main() {
 	r := gin.Default()
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "7713"
+	}
 
 	conn := db.NewDbConn()
 	defer conn.Close()
@@ -58,5 +64,5 @@ func main() {
 	worker := worker.NewWorker(storage, path)
 	go worker.Start(5 * time.Minute)
 
-	r.Run(":7713")
+	r.Run(fmt.Sprintf(":%s", port))
 }
