@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -29,6 +30,7 @@ func (w *Worker) Start(interval time.Duration) {
 }
 
 func (w *Worker) cleanOrphans() {
+	fmt.Println("cleanando")
 	blobsinfos, err := w.storage.FindAll()
 	if err != nil {
 		log.Printf("[worker] error while finding blobs infos: %s", err)
@@ -36,7 +38,7 @@ func (w *Worker) cleanOrphans() {
 	}
 
 	for _, bi := range blobsinfos {
-		path := filepath.Join(w.dir, bi.ID)
+		path := filepath.Join(w.dir, fmt.Sprintf("%s_%s", bi.Bucket, bi.ID))
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			log.Printf("[worker] orphan found (id: %s, bucket: %s)", bi.ID, bi.Bucket)
