@@ -5,8 +5,8 @@ import (
 	"os"
 )
 
-func (bs *BlobStorage) DownloadByID(id string) ([]byte, error) {
-	blob, err := os.ReadFile(fmt.Sprintf("/tmp/blobs/%s", id))
+func (bs *BlobStorage) DownloadByID(bucket string, id string) ([]byte, error) {
+	blob, err := os.ReadFile(fmt.Sprintf("/tmp/blobs/%s_%s", bucket, id))
 	if err != nil {
 		return nil, err
 	}

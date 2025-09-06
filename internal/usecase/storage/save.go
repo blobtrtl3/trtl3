@@ -36,7 +36,7 @@ func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, 
 	}
 
 	if err := os.WriteFile(
-		fmt.Sprintf("/tmp/blobs/%s", blobInfo.ID),
+		fmt.Sprintf("/tmp/blobs/%s_%s", blobInfo.Bucket, blobInfo.ID),
 		blobBytes,
 		os.ModePerm,
 	); err != nil {

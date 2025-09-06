@@ -51,7 +51,7 @@ func main() {
 	protected.GET("/:bucket/:id", blobHandler.FindByBucketAndID)
 	protected.DELETE("/:bucket/:id", blobHandler.Delete)
 
-	protected.GET("/blobs/download/:id", blobHandler.DownloadByID)
+	protected.GET("/blobs/download/:bucket/:id", blobHandler.DownloadByID)
 
 	r.Static("/b", path)
 

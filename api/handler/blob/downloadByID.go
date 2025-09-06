@@ -17,17 +17,17 @@ import (
 // @Success      200 {object}
 // @Router       /blobs/download/{bucket}/{id} [get]
 func (bh *BlobHandler) DownloadByID(c *gin.Context) {
+	bucket := c.Param("bucket")
 	id := c.Param("id")
-	// TODO: take by id and bucket
 
-	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the id sent"})
+	if bucket == "" || id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id sent"})
 		return
 	}
 
-	blobBytes, err := bh.storage.DownloadByID(id)
+	blobBytes, err := bh.storage.DownloadByID(bucket, id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob with id: %s", id)})
+		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s with id: %s", bucket, id)})
 		return
 	}
 
