@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Trtl3 Logo" src=".github/assets/readme/trtl3.svg" width="200"/>
+  <img alt="Trtl3 Logo" src="https://github.com/blobtrtl3/docs/blob/main/logo/logo.svg" width="200"/>
 </div>
 
 <p align="center">
