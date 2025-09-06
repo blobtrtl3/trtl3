@@ -7,6 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary      Delete blob
+// @Description  Delete a single blob by using the bucket and id
+// @Accept       json
+// @Produce      json 
+// @Param        Authorization header string true "Access token" default("")
+// @Param 			 bucket path string true "Bucket name"
+// @Param 			 id path string true "Blob id"
+// @Success      200 {object}
+// @Router       /blobs/{bucket}/{id} [get]
+
 func (bh *BlobHandler) Delete(c *gin.Context) {
 	bucket := c.Param("bucket")
 	id := c.Param("id")
