@@ -48,10 +48,10 @@ func main() {
 
 	protected.POST("", blobHandler.Save)
 	protected.GET("", blobHandler.FindByBucket)
-	protected.GET("/:bucket/:id", blobHandler.FindByBucketAndID)
+	protected.GET("/:bucket/:id", blobHandler.FindUnique)
 	protected.DELETE("/:bucket/:id", blobHandler.Delete)
 
-	protected.GET("/download/:bucket/:id", blobHandler.DownloadByID)
+	protected.GET("/download/:bucket/:id", blobHandler.Download)
 
 	r.Static("/b", path)
 

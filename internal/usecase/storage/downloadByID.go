@@ -7,7 +7,7 @@ import (
 	"github.com/blobtrtl3/trtl3/shared"
 )
 
-func (bs *BlobStorage) DownloadByID(bucket string, id string) ([]byte, error) {
+func (bs *BlobStorage) Download(bucket string, id string) ([]byte, error) {
 	blob, err := os.ReadFile(filepath.Join(bs.dir, shared.GenBlobName(bucket, id)))
 	if err != nil {
 		return nil, err

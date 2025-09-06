@@ -9,9 +9,9 @@ import (
 type Storage interface {
 	Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, error)
 	FindByBucket(bucket string) ([]domain.BlobInfo, error)
-	FindByBucketAndID(bucket string, id string) (*domain.BlobInfo, error)
+	FindUnique(bucket string, id string) (*domain.BlobInfo, error)
 	Delete(bucket string, id string) (bool, error)
-	DownloadByID(bucket string, id string) ([]byte, error)
+	Download(bucket string, id string) ([]byte, error)
 	FindAll() ([]domain.BlobInfo, error)
 }
 
