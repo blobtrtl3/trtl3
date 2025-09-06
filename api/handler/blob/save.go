@@ -14,6 +14,18 @@ type saveBlobReq struct {
 	Bucket string `form:"bucket" binding:"required,alphanum"`
 }
 
+// @Summary      Upload blob
+// @Description  Upload a blob to server
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        Authorization header string true "Access token" default("")
+// @Param        bucket formData string true "Bucket name"
+// @Param        blob formData file true "Blob file"
+// @Success      201 {object} domain.BlobInfo
+// @Failure      400 {object} gin.H
+// @Failure      401 {object} gin.H
+// @Failure      500 {object} gin.H
+// @Router       /blobs [post]
 func (bh *BlobHandler) Save(c *gin.Context) {
 	var req saveBlobReq
 
@@ -55,5 +67,5 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, blobInfo)
+	c.JSON(http.StatusCreated, blobInfo)
 }
