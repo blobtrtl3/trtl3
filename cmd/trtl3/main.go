@@ -9,6 +9,7 @@ import (
 
 	handler "github.com/blobtrtl3/trtl3/api/handler/blob"
 	"github.com/blobtrtl3/trtl3/api/middleware"
+	"github.com/blobtrtl3/trtl3/internal/domain"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
 	"github.com/blobtrtl3/trtl3/internal/worker"
@@ -28,6 +29,8 @@ func main() {
 
 	conn := db.NewDbConn()
 	defer conn.Close()
+
+	signeds := map[string]domain.Signature{}
 
 	_, err := conn.Exec(`
     CREATE TABLE IF NOT EXISTS blobsinfo (
@@ -62,7 +65,15 @@ func main() {
 
 	protected.GET("/download/:bucket/:id", blobHandler.Download)
 
-	r.Static("/b", path)
+	signeds["abc"] = domain.Signature{
+		Bucket: "txts",
+		ID: "abcde",
+		TTL: time.Now().Add(50 * time.Minute),
+		Once: false,
+	}
+	serve := r.Group("/b", middleware.SignMiddleware(signeds))
+	serve.GET("", blobHandler.Serve)
+	// serve.Static("", path)
 
 	worker := worker.NewWorker(storage, path)
 	go worker.Start(5 * time.Minute)
