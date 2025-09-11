@@ -12,9 +12,9 @@ import (
 
 type signBlobReq struct {
 	Bucket string `json:"bucket" binding:"required,alphanum"`
-	ID string `json:"id" binding:"required,alphanum"`
-	TTL int `json:"ttl" binding:"required,min=1,max=24"`
-	Once bool `json:"once" binding:"required"`
+	ID     string `json:"id" binding:"required,alphanum"`
+	TTL    int    `json:"ttl" binding:"required,min=1,max=24"`
+	Once   bool   `json:"once" binding:"required"`
 }
 
 // @Summary      Sign a blob url
@@ -29,15 +29,15 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 	var req signBlobReq
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-      "message": "verify the data you sent",
-    })
+			"message": "verify the data you sent",
+		})
 		return
 	}
 
 	if _, err := bh.storage.FindUnique(req.Bucket, req.ID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-      "message": "verify the data you sent and try again",
-    })
+			"message": "verify the data you sent and try again",
+		})
 		return
 	}
 
@@ -46,9 +46,9 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 
 	bh.hashmap[signature] = domain.Signature{
 		Bucket: req.Bucket,
-		ID: req.ID,
-		TTL: now.Add(time.Duration(req.TTL) * time.Hour),
-		Once: req.Once,
+		ID:     req.ID,
+		TTL:    now.Add(time.Duration(req.TTL) * time.Hour),
+		Once:   req.Once,
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
