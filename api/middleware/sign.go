@@ -10,7 +10,7 @@ import (
 
 func SignMiddleware(hashmap map[string]domain.Signature) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		sign := c.Param("sign")
+		sign := c.Query("sign")
 
 		signature, exists := hashmap[sign]
 		if !exists {
@@ -33,6 +33,9 @@ func SignMiddleware(hashmap map[string]domain.Signature) gin.HandlerFunc {
 		if signature.Once == true {
 			delete(hashmap, sign)
 		}
+
+		c.Set("bucket", signature.Bucket)
+		c.Set("id", signature.ID)
 
 		c.Next()
 	}
