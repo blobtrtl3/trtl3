@@ -17,9 +17,14 @@ type signBlobReq struct {
 	Once bool `json:"once" binding:"required"`
 }
 
-// TODO: docs
-
-// @Summary      Serve a blob
+// @Summary      Sign a blob url
+// @Description  Sign a blob to others acces it without server key
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Access token" default("")
+// @Param        request body signBlobReq true "Blob sign request"
+// @Success      201
+// @Router       /blobs/sign [post]
 func (bh *BlobHandler) Sign(c *gin.Context) {
 	var req signBlobReq
 	if err := c.BindJSON(&req); err != nil {
@@ -46,7 +51,7 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 		Once: req.Once,
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"url": fmt.Sprintf("https://localhost:7713/b?sign=%s", signature),
 	})
 }
