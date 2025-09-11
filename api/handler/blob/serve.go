@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,8 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: docs
 // @Summary      Serve a blob
+// @Description  Serve a blob by a signed url
+// @Accept       json
+// @Produce      json
+// @Param 			 sign path string true "sign"
+// @Success      200
+// @Router       /b [get]
 func (bh *BlobHandler) Serve(c *gin.Context) {
 	bucket, exists := c.Get("bucket")
 	if !exists {
