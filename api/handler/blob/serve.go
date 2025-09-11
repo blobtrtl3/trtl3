@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO: docs
 // @Summary      Serve a blob
 func (bh *BlobHandler) Serve(c *gin.Context) {
 	bucket, exists := c.Get("bucket")
@@ -24,10 +25,9 @@ func (bh *BlobHandler) Serve(c *gin.Context) {
 		return
 	}
 
-
 	blobInfo, err := bh.storage.FindUnique(bucket.(string), id.(string))
 	if err != nil {
-		fmt.Print(err)
+		c.JSON(http.StatusNotFound, gin.H{"message": "blob not found, check your data and try again"})
 		return
 	}
 

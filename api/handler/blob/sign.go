@@ -1,17 +1,23 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/blobtrtl3/trtl3/internal/domain"
+	"github.com/blobtrtl3/trtl3/shared"
 	"github.com/gin-gonic/gin"
 )
 
 type signBlobReq struct {
 	Bucket string `json:"bucket" binding:"required,alphanum"`
 	ID string `json:"id" binding:"required,alphanum"`
+	TTL int `json:"ttl" binding:"required,min=1,max=24"`
+	Once bool `json:"once" binding:"required"`
 }
+
+// TODO: docs
 
 // @Summary      Serve a blob
 func (bh *BlobHandler) Sign(c *gin.Context) {
@@ -23,14 +29,24 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 		return
 	}
 
-	bh.hashmap["abc"] = domain.Signature{
-		Bucket: req.Bucket,
-		ID: req.ID,
-		TTL: time.Now().Add(50 * time.Minute),
-		Once: false,
+	if _, err := bh.storage.FindUnique(req.Bucket, req.ID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+      "message": "verify the data you sent and try again",
+    })
+		return
 	}
 
-	c.JSON(http.StatusBadRequest, gin.H{
-		"url": "https://localhost:7713/b?sign=abc",
+	now := time.Now()
+	signature := fmt.Sprintf("%s%s", shared.GenShortID(), now.Format("050204")) // format to SSDDMM
+
+	bh.hashmap[signature] = domain.Signature{
+		Bucket: req.Bucket,
+		ID: req.ID,
+		TTL: now.Add(time.Duration(req.TTL) * time.Hour),
+		Once: req.Once,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"url": fmt.Sprintf("https://localhost:7713/b?sign=%s", signature),
 	})
 }
