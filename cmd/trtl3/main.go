@@ -54,26 +54,24 @@ func main() {
 
 	storage := storage.NewBlobStorage(conn, path)
 
-	blobHandler := handler.NewBlob(storage)
+	blobHandler := handler.NewBlob(storage, signeds)
 
 	protected := r.Group("/blobs", middleware.AuthMiddleware())
+	{
+		protected.POST("", blobHandler.Save)
+		protected.GET("", blobHandler.FindByBucket)
+		protected.GET("/:bucket/:id", blobHandler.FindUnique)
+		protected.DELETE("/:bucket/:id", blobHandler.Delete)
 
-	protected.POST("", blobHandler.Save)
-	protected.GET("", blobHandler.FindByBucket)
-	protected.GET("/:bucket/:id", blobHandler.FindUnique)
-	protected.DELETE("/:bucket/:id", blobHandler.Delete)
+		protected.GET("/download/:bucket/:id", blobHandler.Download)
 
-	protected.GET("/download/:bucket/:id", blobHandler.Download)
-
-	signeds["abc"] = domain.Signature{
-		Bucket: "txts",
-		ID: "abcde",
-		TTL: time.Now().Add(50 * time.Minute),
-		Once: false,
+		protected.POST("/sign", blobHandler.Sign)
 	}
+
 	serve := r.Group("/b", middleware.SignMiddleware(signeds))
-	serve.GET("", blobHandler.Serve)
-	// serve.Static("", path)
+	{
+		serve.GET("", blobHandler.Serve)
+	}
 
 	worker := worker.NewWorker(storage, path)
 	go worker.Start(5 * time.Minute)
