@@ -1,11 +1,9 @@
-name: Publish Trtl3 on Docker Hub
+name: Publish trtl3
 
 on:
   push:
     branches:
       - main
-    paths:
-      - "trtl3-core/**"
 
 jobs:
   build-and-push:
@@ -23,6 +21,6 @@ jobs:
 
       - name: Build and Push Image
         run: |
-          docker build -t nothiaki/trtl3-core:latest ./trtl3-core
-          docker push nothiaki/trtl3-core:latest
+          docker build -t nothiaki/trtl3:latest ./
+          docker push nothiaki/trtl3:latest
 
