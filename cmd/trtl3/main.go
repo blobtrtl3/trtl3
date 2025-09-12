@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	handler "github.com/blobtrtl3/trtl3/api/handler/blob"
@@ -19,6 +20,11 @@ import (
 // @version 1.0
 // @description Blob storage api
 func main() {
+	jobInterval, err := strconv.Atoi(os.Getenv("JOB_INTERVAL"))
+	if err != nil {
+		jobInterval = 5
+	}
+
 	r := gin.Default()
 
 	conn := db.NewDbConn()
@@ -26,7 +32,7 @@ func main() {
 
 	signeds := map[string]domain.Signature{}
 
-	_, err := conn.Exec(`
+	_, err = conn.Exec(`
     CREATE TABLE IF NOT EXISTS blobsinfo (
       id TEXT NOT NULL,
       bucket TEXT NOT NULL,
@@ -69,7 +75,7 @@ func main() {
 	}
 
 	job := jobs.NewJobs(storage, path, signatures)
-	go job.Start(5 * time.Minute)
+	go job.Start(time.Duration(jobInterval) * time.Minute)
 
 	r.Run(":7713")
 }
