@@ -1,13 +1,10 @@
-<div align="center">
-  <img alt="Trtl3 Logo" src="https://github.com/blobtrtl3/docs/blob/main/logo/logo.svg" width="200"/>
-</div>
+<img alt="Trtl3 Logo" src="https://github.com/blobtrtl3/docs/blob/main/logo/logo.svg" width="200"/>
 
-<p align="center">
-  <a href="https://hub.docker.com/r/nothiaki/trtl3"><img src="https://img.shields.io/docker/pulls/nothiaki/trtl3.svg" alt="docker pulls"></a>
-  <a href="https://github.com/blobtrtl3/trtl3/actions"><img src="https://img.shields.io/github/actions/workflow/status/blobtrtl3/trtl3/publish.yml" alt="trtl3 build"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"></a>
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="PRs welcome"></a>
-</p>
+[![publish status](https://github.com/blobtrtl3/trtl3/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/blobtrtl3/trtl3/actions/workflows/publish.yml)
+[![dockerhub](https://img.shields.io/docker/pulls/nothiaki/trtl3.svg)](https://hub.docker.com/r/nothiaki/trtl3)
+[![go report](https://goreportcard.com/badge/github.com/blobtrtl3/trtl3)](https://goreportcard.com/report/github.com/gin-gonic/gin)
+[![APGL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+[![PRs welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 ## Trtl3
 

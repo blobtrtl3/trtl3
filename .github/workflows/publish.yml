@@ -1,4 +1,4 @@
-name: Publish trtl3
+name: publish
 
 on:
   push:
