@@ -11,8 +11,8 @@ import (
 	"github.com/blobtrtl3/trtl3/api/middleware"
 	"github.com/blobtrtl3/trtl3/internal/domain"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
+	"github.com/blobtrtl3/trtl3/internal/jobs"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
-	"github.com/blobtrtl3/trtl3/internal/worker"
 	"github.com/gin-gonic/gin"
 )
 
@@ -73,8 +73,8 @@ func main() {
 		serve.GET("", blobHandler.Serve)
 	}
 
-	worker := worker.NewWorker(storage, path)
-	go worker.Start(5 * time.Minute)
+	job := jobs.NewJobs(storage, path)
+	go job.Start(5 * time.Minute, signeds)
 
 	r.Run(fmt.Sprintf(":%s", port))
 }
