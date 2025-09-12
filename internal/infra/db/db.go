@@ -8,7 +8,7 @@ import (
 )
 
 func NewDbConn() *sql.DB {
-	db, err := sql.Open("duckdb", "")
+	db, err := sql.Open("duckdb", "db")
 	if err != nil {
 		log.Fatalf("Could not create connection in database, reason: %s", err)
 	}
