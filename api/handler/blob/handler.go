@@ -1,18 +1,18 @@
 package handler
 
 import (
-	"github.com/blobtrtl3/trtl3/internal/domain"
+	"github.com/blobtrtl3/trtl3/internal/usecase/signatures"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
 )
 
 type BlobHandler struct {
 	storage storage.Storage
-	hashmap map[string]domain.Signature
+	signatures signatures.Signatures
 }
 
-func NewBlob(s storage.Storage, hm map[string]domain.Signature) *BlobHandler {
+func NewBlob(st storage.Storage, sg signatures.Signatures) *BlobHandler {
 	return &BlobHandler{
-		storage: s,
-		hashmap: hm,
+		storage: st,
+		signatures: sg,
 	}
 }

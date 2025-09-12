@@ -12,6 +12,7 @@ import (
 	"github.com/blobtrtl3/trtl3/internal/domain"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
+	"github.com/blobtrtl3/trtl3/internal/usecase/signatures"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
 	"github.com/gin-gonic/gin"
 )
@@ -53,8 +54,9 @@ func main() {
 	}
 
 	storage := storage.NewBlobStorage(conn, path)
+	signatures := signatures.NewMapSignatures(signeds)
 
-	blobHandler := handler.NewBlob(storage, signeds)
+	blobHandler := handler.NewBlob(storage, signatures)
 
 	protected := r.Group("/blobs", middleware.AuthMiddleware())
 	{
@@ -68,13 +70,13 @@ func main() {
 		protected.POST("/sign", blobHandler.Sign)
 	}
 
-	serve := r.Group("/b", middleware.SignMiddleware(signeds))
+	serve := r.Group("/b", middleware.SignMiddleware(signatures))
 	{
 		serve.GET("", blobHandler.Serve)
 	}
 
-	job := jobs.NewJobs(storage, path)
-	go job.Start(5 * time.Minute, signeds)
+	job := jobs.NewJobs(storage, path, signatures)
+	go job.Start(5 * time.Minute)
 
 	r.Run(fmt.Sprintf(":%s", port))
 }

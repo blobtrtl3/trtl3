@@ -1,15 +1,11 @@
 package jobs
 
-import (
-	"time"
+import "time"
 
-	"github.com/blobtrtl3/trtl3/internal/domain"
-)
-
-func (j *Jobs) cleanSignatures(hashmap map[string]domain.Signature) {
-  for key, val := range hashmap {
-		if val.TTL.Compare(time.Now()) <= 0 {
-			delete(hashmap, key)
+func (j *Jobs) cleanSignatures() {
+  for _, key := range j.signatures.FindAll() {
+		if j.signatures.Get(key).TTL.Compare(time.Now()) <= 0 {
+			j.signatures.Delete(key)
 		}
   }
 }

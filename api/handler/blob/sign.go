@@ -44,12 +44,15 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 	now := time.Now()
 	signature := fmt.Sprintf("%s%s", shared.GenShortID(), now.Format("050204")) // format to SSDDMM
 
-	bh.hashmap[signature] = domain.Signature{
-		Bucket: req.Bucket,
-		ID:     req.ID,
-		TTL:    now.Add(time.Duration(req.TTL) * time.Hour),
-		Once:   req.Once,
-	}
+	bh.signatures.Set(
+		signature, 
+		domain.Signature{
+			Bucket: req.Bucket,
+			ID:     req.ID,
+			TTL:    now.Add(time.Duration(req.TTL) * time.Hour),
+			Once:   req.Once,
+		},
+	)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"url": fmt.Sprintf("https://localhost:7713/b?sign=%s", signature),

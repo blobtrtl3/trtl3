@@ -4,16 +4,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/domain"
+	"github.com/blobtrtl3/trtl3/internal/usecase/signatures"
 	"github.com/gin-gonic/gin"
 )
 
-func SignMiddleware(hashmap map[string]domain.Signature) gin.HandlerFunc {
+func SignMiddleware(s signatures.Signatures) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sign := c.Query("sign")
 
-		signature, exists := hashmap[sign]
-		if !exists {
+		signature := s.Get(sign)
+		if signature == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"message": "invalid signature",
 			})
@@ -31,7 +31,7 @@ func SignMiddleware(hashmap map[string]domain.Signature) gin.HandlerFunc {
 		}
 
 		if signature.Once == true {
-			delete(hashmap, sign)
+			s.Delete(sign)
 		}
 
 		c.Set("bucket", signature.Bucket)
