@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -22,11 +21,6 @@ import (
 // @description Blob storage api
 func main() {
 	r := gin.Default()
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "7713"
-	}
 
 	conn := db.NewDbConn()
 	defer conn.Close()
@@ -78,5 +72,5 @@ func main() {
 	job := jobs.NewJobs(storage, path, signatures)
 	go job.Start(5 * time.Minute)
 
-	r.Run(fmt.Sprintf(":%s", port))
+	r.Run(":7713")
 }
