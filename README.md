@@ -3,7 +3,7 @@
 <img align="right" width="180px" src="https://github.com/blobtrtl3/docs/blob/main/logo/logo.svg" alt="trtl3 logo">
 
 [![publish status](https://github.com/blobtrtl3/trtl3/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/blobtrtl3/trtl3/actions/workflows/publish.yml)
-[![dockerhub](https://img.shields.io/docker/pulls/nothiaki/trtl3.svg)](https://hub.docker.com/r/nothiaki/trtl3)
+[![dockerhub](https://img.shields.io/docker/pulls/nothiaki/trtl3)](https://hub.docker.com/r/nothiaki/trtl3)
 [![go report](https://goreportcard.com/badge/github.com/blobtrtl3/trtl3)](https://goreportcard.com/report/github.com/gin-gonic/gin)
 [![APGL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -49,8 +49,13 @@ services:
 
 ## Usage
 
-So you can use it with SDK's or REST.
+You can use trtl3 by REST api or our official SDKs:
 Go on our [website](https://trtl3.store) to learn more.
+
+SDKs:
+
+- [GO](https://github.com/blobtrtl3/trtl3-go)
+... soon in nodejs and java
 
 ---
 
