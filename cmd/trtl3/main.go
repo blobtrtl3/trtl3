@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"os"
-	"path/filepath"
 	"time"
 
 	handler "github.com/blobtrtl3/trtl3/api/handler/blob"
@@ -41,7 +40,7 @@ func main() {
 		log.Fatalf("Could not create database table, reason: %s", err)
 	}
 
-	var path = filepath.Join(os.TempDir(), "blobs")
+	var path = "blobs"
 
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)

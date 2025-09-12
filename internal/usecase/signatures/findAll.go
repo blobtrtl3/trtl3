@@ -8,4 +8,3 @@ func (ms *MapSignatures) FindAll() []string {
 
 	return keys
 }
-

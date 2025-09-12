@@ -6,13 +6,13 @@ import (
 )
 
 type BlobHandler struct {
-	storage storage.Storage
+	storage    storage.Storage
 	signatures signatures.Signatures
 }
 
 func NewBlob(st storage.Storage, sg signatures.Signatures) *BlobHandler {
 	return &BlobHandler{
-		storage: st,
+		storage:    st,
 		signatures: sg,
 	}
 }

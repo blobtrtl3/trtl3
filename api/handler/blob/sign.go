@@ -45,7 +45,7 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 	signature := fmt.Sprintf("%s%s", shared.GenShortID(), now.Format("050204")) // format to SSDDMM
 
 	bh.signatures.Set(
-		signature, 
+		signature,
 		domain.Signature{
 			Bucket: req.Bucket,
 			ID:     req.ID,

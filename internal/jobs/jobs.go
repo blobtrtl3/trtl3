@@ -8,13 +8,13 @@ import (
 )
 
 type Jobs struct {
-	storage storage.Storage
+	storage    storage.Storage
 	signatures signatures.Signatures
-	dir     string
+	dir        string
 }
 
-func NewJobs(storage storage.Storage, dir string, signatures signatures.Signatures) *Jobs {
-	return &Jobs{storage: storage, dir: dir, signatures: signatures}
+func NewJobs(st storage.Storage, dir string, s signatures.Signatures) *Jobs {
+	return &Jobs{storage: st, dir: dir, signatures: s}
 }
 
 func (j *Jobs) Start(interval time.Duration) {
@@ -27,4 +27,3 @@ func (j *Jobs) Start(interval time.Duration) {
 		j.cleanSignatures()
 	}
 }
-

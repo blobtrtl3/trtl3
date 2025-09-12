@@ -17,6 +17,6 @@ type MapSignatures struct {
 
 func NewMapSignatures(hm map[string]domain.Signature) Signatures {
 	return &MapSignatures{
-		hm:  hm,
+		hm: hm,
 	}
 }
