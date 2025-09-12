@@ -1,4 +1,6 @@
-<img alt="Trtl3 Logo" src="https://github.com/blobtrtl3/docs/blob/main/logo/logo.svg" width="200"/>
+# TRTL3
+
+<img align="right" width="180px" src="https://github.com/blobtrtl3/docs/blob/main/logo/logo.svg" alt="trtl3 logo">
 
 [![publish status](https://github.com/blobtrtl3/trtl3/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/blobtrtl3/trtl3/actions/workflows/publish.yml)
 [![dockerhub](https://img.shields.io/docker/pulls/nothiaki/trtl3.svg)](https://hub.docker.com/r/nothiaki/trtl3)
@@ -6,16 +8,19 @@
 [![APGL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-## Trtl3
-
-**Trtl3**🐢 is a file storage service designed for beginner developers who want to learn how object storage works in practice — without
+**Trtl3**🐢 is a file storage service written in [GO](https://go.dev/) designed for developers who want to build things without
 the complexity of cloud services or external dependencies.
-
-If you're building or experimenting with file uploads, downloads, and basic file organization via HTTP — Trtl3 is a great starting point!
+If you're building something with files uploads, downloads, and blobs organization — Trtl3 is a great starting point!
 
 ---
 
-## 🛠️ Getting Started
+# Table of Contents
+
+soon...
+
+---
+
+## Getting Started
 
 After Install Docker/Docker Compose you can install trtl3 using this command:
 
@@ -39,5 +44,5 @@ services:
 ```
 
 So you can use it with SDK's or REST.
-Go on [Trtl3 Website](https://trtl3.store) to know more.
+Go on our [website](https://trtl3.store) to learn more.
 
