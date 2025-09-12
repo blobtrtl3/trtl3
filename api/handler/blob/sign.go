@@ -14,7 +14,7 @@ type signBlobReq struct {
 	Bucket string `json:"bucket" binding:"required,alphanum"`
 	ID     string `json:"id" binding:"required,alphanum"`
 	TTL    int    `json:"ttl" binding:"required,min=1,max=24"`
-	Once   bool   `json:"once" binding:"required"`
+	Once   bool   `json:"once"`
 }
 
 // @Summary      Sign a blob url
