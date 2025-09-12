@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine as builder
+FROM golang:1.25-bookworm as builder
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN go mod download
 
 RUN go build -o app ./cmd/trtl3/main.go
 
-FROM alpine:3.18
+FROM debian:bookworm-slim
 
 WORKDIR /app
 
