@@ -3,10 +3,10 @@
 </div>
 
 <p align="center">
-  <a href="https://hub.docker.com/r/nothiaki/trtl3"><img src="https://img.shields.io/docker/pulls/nothiaki/trtl3.svg" alt="DockerHub pulls"></a>
-  <a href="https://github.com/blobtrtl3/trtl3/actions"><img src="https://img.shields.io/github/actions/workflow/status/blobtrtl3/trtl3/publish.yml" alt="Trtl3 Cora Build"></a>
+  <a href="https://hub.docker.com/r/nothiaki/trtl3"><img src="https://img.shields.io/docker/pulls/nothiaki/trtl3.svg" alt="docker pulls"></a>
+  <a href="https://github.com/blobtrtl3/trtl3/actions"><img src="https://img.shields.io/github/actions/workflow/status/blobtrtl3/trtl3/publish.yml" alt="trtl3 build"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"></a>
-  <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="Contributions welcome"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="PRs welcome"></a>
 </p>
 
 ## Trtl3
@@ -33,7 +33,7 @@ If you want to use docker compose you can add it on the file:
 ```yaml
 services:
 
-  trtl3-core:
+  trtl3:
     image: nothiaki/trtl3:latest
     ports:
       - 7713:7713
