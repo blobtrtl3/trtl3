@@ -14,9 +14,11 @@ If you're building something with files uploads, downloads, and blobs organizati
 
 ---
 
-# Table of Contents
+## Table of Contents
 
-soon...
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Features](#features)
 
 ---
 
@@ -43,6 +45,15 @@ services:
       - TOKEN=your_token_here
 ```
 
+---
+
+## Usage
+
 So you can use it with SDK's or REST.
 Go on our [website](https://trtl3.store) to learn more.
 
+---
+
+## Features
+
+soon...
