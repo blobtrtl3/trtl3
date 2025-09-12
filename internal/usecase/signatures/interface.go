@@ -6,8 +6,9 @@ import (
 
 type Signatures interface {
 	Set(key string, val domain.Signature)
-	Get(key string) domain.Signature
+	Get(key string) *domain.Signature
 	Delete(key string)
+	FindAll() []domain.Signature
 }
 
 type MapSignatures struct {
