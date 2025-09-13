@@ -8,9 +8,9 @@
 [![APGL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Trtl3**🐢 is a file storage service written in [GO](https://go.dev/) designed for developers who want to build things without
+**TRTL3**🐢 is a file storage service written in [GO](https://go.dev/) designed for developers who want to build things without
 the complexity of cloud services or external dependencies.
-If you're building something with files uploads, downloads, and blobs organization — Trtl3 is a great starting point!
+If you're building something with files uploads, downloads, and blobs organization — TRTL3 is a great starting point!
 
 ---
 
@@ -24,7 +24,7 @@ If you're building something with files uploads, downloads, and blobs organizati
 
 ## Getting Started
 
-After Install Docker/Docker Compose you can install trtl3 using this command:
+After Install Docker/Docker Compose you can install TRTL3 using this command:
 
 ```bash
 docker run -d --name trtl3 -p 7713:7713 -e TOKEN=your_secret_token nothiaki/trtl3:latest
@@ -49,7 +49,7 @@ services:
 
 ## Usage
 
-You can use trtl3 by REST api or our official SDKs:
+You can use TRTL3 by REST api or our official SDKs:
 Go on our [website](https://trtl3.store) to learn more.
 
 SDKs:
