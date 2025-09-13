@@ -1,0 +1,9 @@
+services:
+  trtl3:
+    build: .
+    container_name: trtl3
+    ports:
+      - 7713:7713
+    environment:
+      - TOKEN=token
+      - JOB_INTERVAL=3
