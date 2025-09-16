@@ -10,6 +10,7 @@ import (
 type BlobTask struct {
 	Info  *domain.BlobInfo
 	Bytes []byte
+	Retries int
 }
 
 type BlobQueue struct {
