@@ -10,18 +10,18 @@ import (
 )
 
 type RoutesCtx struct {
-	r *gin.Engine
-	storage storage.Storage
+	r          *gin.Engine
+	storage    storage.Storage
 	signatures signatures.Signatures
-	blobQueue queue.BlobQueue
+	blobQueue  queue.BlobQueue
 }
 
 func NewRoutesCtx(r *gin.Engine, st storage.Storage, si signatures.Signatures, q queue.BlobQueue) *RoutesCtx {
 	return &RoutesCtx{
-		r: r,
-		storage: st,
+		r:          r,
+		storage:    st,
 		signatures: si,
-		blobQueue: q,
+		blobQueue:  q,
 	}
 }
 
@@ -45,4 +45,3 @@ func (rctx *RoutesCtx) SetupRoutes() {
 		serve.GET("", blobHandler.Serve)
 	}
 }
-

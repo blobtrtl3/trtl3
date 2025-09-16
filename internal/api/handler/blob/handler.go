@@ -9,7 +9,7 @@ import (
 type BlobHandler struct {
 	storage    storage.Storage
 	signatures signatures.Signatures
-	bloQueue queue.BlobQueue
+	bloQueue   queue.BlobQueue
 }
 
 func NewBlob(
@@ -20,6 +20,6 @@ func NewBlob(
 	return &BlobHandler{
 		storage:    st,
 		signatures: sg,
-		bloQueue: bq,
+		bloQueue:   bq,
 	}
 }
