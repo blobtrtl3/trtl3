@@ -1,8 +1,8 @@
 package routes
 
 import (
-	handler "github.com/blobtrtl3/trtl3/api/handler/blob"
-	"github.com/blobtrtl3/trtl3/api/middleware"
+	handler "github.com/blobtrtl3/trtl3/internal/api/handler/blob"
+	"github.com/blobtrtl3/trtl3/internal/api/middleware"
 	"github.com/blobtrtl3/trtl3/internal/usecase/signatures"
 	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
 	"github.com/gin-gonic/gin"

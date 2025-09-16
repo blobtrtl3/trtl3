@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/api/routes"
+	"github.com/blobtrtl3/trtl3/internal/api/routes"
 	"github.com/blobtrtl3/trtl3/internal/domain"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
