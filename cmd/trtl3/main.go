@@ -10,8 +10,8 @@ import (
 	"github.com/blobtrtl3/trtl3/internal/domain"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
-	"github.com/blobtrtl3/trtl3/internal/usecase/signatures"
-	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
+	"github.com/blobtrtl3/trtl3/internal/repo/signatures"
+	"github.com/blobtrtl3/trtl3/internal/repo/storage"
 	"github.com/gin-gonic/gin"
 )
 

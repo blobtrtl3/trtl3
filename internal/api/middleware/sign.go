@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/usecase/signatures"
+	"github.com/blobtrtl3/trtl3/internal/repo/signatures"
 	"github.com/gin-gonic/gin"
 )
 

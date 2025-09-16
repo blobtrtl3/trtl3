@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/blobtrtl3/trtl3/internal/usecase/signatures"
-	"github.com/blobtrtl3/trtl3/internal/usecase/storage"
+	"github.com/blobtrtl3/trtl3/internal/repo/signatures"
+	"github.com/blobtrtl3/trtl3/internal/repo/storage"
 )
 
 type BlobHandler struct {
