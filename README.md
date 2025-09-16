@@ -6,7 +6,8 @@
 [![dockerhub](https://img.shields.io/docker/pulls/nothiaki/trtl3)](https://hub.docker.com/r/nothiaki/trtl3)
 [![go report](https://goreportcard.com/badge/github.com/blobtrtl3/trtl3)](https://goreportcard.com/report/github.com/gin-gonic/gin)
 [![APGL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
-[![PRs welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![download](https://img.shields.io/badge/download-latest-brightgreen)](https://hub.docker.com/r/nothiaki/trtl3)
 
 **TRTL3**🐢 is a file storage service written in [GO](https://go.dev/) designed for developers who want to build things without
 the complexity of cloud services or external dependencies.
