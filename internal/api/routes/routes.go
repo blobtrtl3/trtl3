@@ -3,6 +3,7 @@ package routes
 import (
 	handler "github.com/blobtrtl3/trtl3/internal/api/handler/blob"
 	"github.com/blobtrtl3/trtl3/internal/api/middleware"
+	"github.com/blobtrtl3/trtl3/internal/queue"
 	"github.com/blobtrtl3/trtl3/internal/repo/signatures"
 	"github.com/blobtrtl3/trtl3/internal/repo/storage"
 	"github.com/gin-gonic/gin"
@@ -12,18 +13,20 @@ type RoutesCtx struct {
 	r *gin.Engine
 	storage storage.Storage
 	signatures signatures.Signatures
+	blobQueue queue.BlobQueue
 }
 
-func NewRoutesCtx(r *gin.Engine, st storage.Storage, si signatures.Signatures) *RoutesCtx {
+func NewRoutesCtx(r *gin.Engine, st storage.Storage, si signatures.Signatures, q queue.BlobQueue) *RoutesCtx {
 	return &RoutesCtx{
 		r: r,
 		storage: st,
 		signatures: si,
+		blobQueue: q,
 	}
 }
 
 func (rctx *RoutesCtx) SetupRoutes() {
-	blobHandler := handler.NewBlob(rctx.storage, rctx.signatures)
+	blobHandler := handler.NewBlob(rctx.storage, rctx.signatures, rctx.blobQueue)
 
 	protected := rctx.r.Group("/blobs", middleware.AuthMiddleware())
 	{

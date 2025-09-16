@@ -58,8 +58,7 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 		Size:      blobMultipart.Size, // NOTE: size in bytes value
 	}
 
-	_, err = bh.storage.Save(blobInfo, blobBytes)
-	if err != nil {
+	if err = bh.bloQueue.Append(blobInfo, blobBytes); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "could not save the blob, try again"})
 		return
 	}

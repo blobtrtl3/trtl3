@@ -10,6 +10,7 @@ import (
 	"github.com/blobtrtl3/trtl3/internal/domain"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
+	"github.com/blobtrtl3/trtl3/internal/queue"
 	"github.com/blobtrtl3/trtl3/internal/repo/signatures"
 	"github.com/blobtrtl3/trtl3/internal/repo/storage"
 	"github.com/gin-gonic/gin"
@@ -40,7 +41,10 @@ func main() {
 	storage := storage.NewBlobStorage(conn, path)
 	signatures := signatures.NewMapSignatures(signeds)
 
-	routes.NewRoutesCtx(r, storage, signatures).SetupRoutes()
+	// TODO: take workers from env
+	blobQueue := queue.NewBlobQueue(10, storage)
+
+	routes.NewRoutesCtx(r, storage, signatures, *blobQueue).SetupRoutes()
 
 	job := jobs.NewJobs(storage, path, signatures)
 	go job.Start(time.Duration(jobInterval) * time.Minute)
