@@ -23,7 +23,12 @@ func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, 
 		return bs.Save(blobInfo, blobBytes)
 	}
 
-	_, err := bs.db.Exec(
+	tx, err := bs.db.Begin()
+	if err != nil {
+		return false, err
+	}
+
+	_, err = tx.Exec(
 		"INSERT INTO blobsinfo VALUES(?, ?, ?, ?, ?)",
 		blobInfo.ID,
 		blobInfo.Bucket,
@@ -32,6 +37,7 @@ func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, 
 		blobInfo.CreatedAt,
 	)
 	if err != nil {
+		tx.Rollback()
 		return false, err
 	}
 
@@ -40,6 +46,11 @@ func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, 
 		blobBytes,
 		os.ModePerm,
 	); err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return false, err
 	}
 
