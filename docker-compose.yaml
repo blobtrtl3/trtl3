@@ -1,4 +1,5 @@
 services:
+
   trtl3:
     build: .
     container_name: trtl3
@@ -7,3 +8,5 @@ services:
     environment:
       - TOKEN=token
       - JOB_INTERVAL=3
+    volumes:
+      - ./blobs:/app/blobs
