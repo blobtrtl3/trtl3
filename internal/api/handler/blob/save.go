@@ -55,7 +55,7 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 		Bucket:    req.Bucket,
 		Mime:      blobMultipart.Header.Get("Content-Type"),
 		CreatedAt: time.Now(),
-		Size:      int(int64(blobMultipart.Size) / 1024), // NOTE: blob.Size return value in bytes so I did it to be an KB value
+		Size:      blobMultipart.Size, // NOTE: size in bytes value
 	}
 
 	_, err = bh.storage.Save(blobInfo, blobBytes)
