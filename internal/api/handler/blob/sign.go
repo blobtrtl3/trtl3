@@ -13,7 +13,7 @@ import (
 type signBlobReq struct {
 	Bucket string `json:"bucket" binding:"required,alphanum"`
 	ID     string `json:"id" binding:"required,alphanum"`
-	TTL    int    `json:"ttl" binding:"required,min=1,max=24"`
+	TTL    int    `json:"ttl" binding:"required,min=1,max=1440"`
 	Once   bool   `json:"once"`
 }
 
@@ -49,7 +49,7 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 		domain.Signature{
 			Bucket: req.Bucket,
 			ID:     req.ID,
-			TTL:    now.Add(time.Duration(req.TTL) * time.Hour),
+			TTL:    now.Add(time.Duration(req.TTL) * time.Minute),
 			Once:   req.Once,
 		},
 	)
