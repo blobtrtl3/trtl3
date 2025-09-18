@@ -55,6 +55,6 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 	)
 
 	c.JSON(http.StatusCreated, gin.H{
-		"url": fmt.Sprintf("https://localhost:7713/b?sign=%s", signature),
+		"url": fmt.Sprintf("http://localhost:7713/b?sign=%s", signature),
 	})
 }

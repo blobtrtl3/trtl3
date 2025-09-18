@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
-	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/blobtrtl3/trtl3/shared"
 	"github.com/gin-gonic/gin"
@@ -38,8 +39,8 @@ func (bh *BlobHandler) Serve(c *gin.Context) {
 	blobName := shared.GenBlobName(blobInfo.Bucket, blobInfo.ID)
 
 	c.Header("Content-Type", blobInfo.Mime)
-	c.Header("Content-Disposition", "inline; filename=\""+blobName+"\"")
+	c.Header("Content-Disposition", fmt.Sprintf("inline; filename=%s", time.Now().Format("020504"))) //DDSSMM
 
-	path := filepath.Join(os.TempDir(), "blobs", blobName)
+	path := filepath.Join("blobs", blobName)
 	c.File(path)
 }
