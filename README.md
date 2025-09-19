@@ -4,7 +4,7 @@
 
 [![publish status](https://github.com/blobtrtl3/trtl3/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/blobtrtl3/trtl3/actions/workflows/publish.yml)
 [![dockerhub](https://img.shields.io/docker/pulls/nothiaki/trtl3)](https://hub.docker.com/r/nothiaki/trtl3)
-[![go report](https://goreportcard.com/badge/github.com/blobtrtl3/trtl3)](https://goreportcard.com/report/github.com/gin-gonic/gin)
+[![go report](https://goreportcard.com/badge/github.com/blobtrtl3/trtl3)](https://goreportcard.com/report/github.com/blobtrtl3/trtl3)
 [![APGL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![download](https://img.shields.io/badge/download-latest-brightgreen)](https://hub.docker.com/r/nothiaki/trtl3)
