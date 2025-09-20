@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 
@@ -8,7 +9,7 @@ import (
 	"github.com/blobtrtl3/trtl3/shared"
 )
 
-func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, error) {
+func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, error) {
 	var exists bool
 
 	if err := bs.db.QueryRow(
@@ -20,7 +21,7 @@ func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, 
 
 	if exists {
 		blobInfo.ID = shared.GenShortID()
-		return bs.Save(blobInfo, blobBytes)
+		return bs.Save(blobInfo, r)
 	}
 
 	tx, err := bs.db.Begin()
@@ -41,11 +42,14 @@ func (bs *BlobStorage) Save(blobInfo *domain.BlobInfo, blobBytes []byte) (bool, 
 		return false, err
 	}
 
-	if err := os.WriteFile(
-		filepath.Join(bs.dir, shared.GenBlobName(blobInfo.Bucket, blobInfo.ID)),
-		blobBytes,
-		os.ModePerm,
-	); err != nil {
+	out, err := os.Create(filepath.Join(bs.dir, shared.GenBlobName(blobInfo.Bucket, blobInfo.ID)))
+	if err != nil {
+		tx.Rollback()
+		return false, err
+	}
+	defer out.Close()
+
+	if _, err := io.Copy(out, r); err != nil {
 		tx.Rollback()
 		return false, err
 	}

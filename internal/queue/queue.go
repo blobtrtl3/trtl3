@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"io"
 	"sync"
 
 	"github.com/blobtrtl3/trtl3/internal/domain"
@@ -9,7 +10,7 @@ import (
 
 type BlobTask struct {
 	Info    *domain.BlobInfo
-	Bytes   []byte
+	Blob   	io.Reader
 	Retries int
 }
 

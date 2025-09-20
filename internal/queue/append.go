@@ -1,11 +1,15 @@
 package queue
 
-import "github.com/blobtrtl3/trtl3/internal/domain"
+import (
+	"io"
 
-func (bq *BlobQueue) Append(blobInfo *domain.BlobInfo, blobBytes []byte) error {
+	"github.com/blobtrtl3/trtl3/internal/domain"
+)
+
+func (bq *BlobQueue) Append(blobInfo *domain.BlobInfo, r io.Reader) error {
 	task := BlobTask{
 		Info:  blobInfo,
-		Bytes: blobBytes,
+		Blob: r,
 	}
 
 	bq.wg.Add(1)

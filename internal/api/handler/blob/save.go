@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"io"
 	"net/http"
 	"time"
 
@@ -37,18 +36,12 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 		return
 	}
 
-	inMemBlob, err := blobMultipart.Open()
+	fileBlob, err := blobMultipart.Open()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, we had an error, try again"})
 		return
 	}
-	defer inMemBlob.Close()
-
-	blobBytes, err := io.ReadAll(inMemBlob)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, we had an error, try again"})
-		return
-	}
+	defer fileBlob.Close()
 
 	blobInfo := &domain.BlobInfo{
 		ID:        shared.GenShortID(),
@@ -58,7 +51,7 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 		Size:      blobMultipart.Size, // NOTE: size in bytes value
 	}
 
-	if err = bh.bloQueue.Append(blobInfo, blobBytes); err != nil {
+	if err = bh.bloQueue.Append(blobInfo, fileBlob); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "could not save the blob, try again"})
 		return
 	}
