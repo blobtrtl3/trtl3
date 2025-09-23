@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"time"
+
 	handler "github.com/blobtrtl3/trtl3/internal/api/handler/blob"
 	"github.com/blobtrtl3/trtl3/internal/api/middleware"
 	"github.com/blobtrtl3/trtl3/internal/queue"
@@ -27,6 +29,15 @@ func NewRoutesCtx(r *gin.Engine, st storage.Storage, si signatures.Signatures, q
 
 func (rctx *RoutesCtx) SetupRoutes() {
 	blobHandler := handler.NewBlob(rctx.storage, rctx.signatures, rctx.blobQueue)
+
+	// Health check endpoint (no authentication required)
+	rctx.r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status": "healthy",
+			"service": "trtl3",
+			"timestamp": time.Now().UTC(),
+		})
+	})
 
 	protected := rctx.r.Group("/blobs", middleware.AuthMiddleware())
 	{

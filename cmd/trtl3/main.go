@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/blobtrtl3/trtl3/internal/api/routes"
@@ -35,8 +36,18 @@ func main() {
 	storage := storage.NewBlobStorage(conn, path)
 	signatures := signatures.NewMapSignatures(signeds)
 
-	// TODO: take workers from env
-	blobQueue := queue.NewBlobQueue(10, storage)
+	// Get number of workers from environment variable, default to 10
+	workersStr := os.Getenv("WORKERS")
+	workers := 10 // default value
+	if workersStr != "" {
+		if w, err := strconv.Atoi(workersStr); err == nil && w > 0 {
+			workers = w
+		} else {
+			log.Printf("Invalid WORKERS value '%s', using default: %d", workersStr, workers)
+		}
+	}
+
+	blobQueue := queue.NewBlobQueue(workers, storage)
 
 	routes.NewRoutesCtx(r, storage, signatures, *blobQueue).SetupRoutes()
 
