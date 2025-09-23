@@ -44,7 +44,16 @@ services:
       - 7713:7713
     environment:
       - TOKEN=your_token_here
+      - WORKERS=10
 ```
+
+### 🔧 Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `TOKEN` | Authentication token for API access | `trtl3` |
+| `WORKERS` | Number of worker threads for file processing | `10` |
+| `JOB_INTERVAL` | Cleanup job interval in minutes | `5` |
 
 ---
 
@@ -58,8 +67,90 @@ SDKs:
 - [GO](https://github.com/blobtrtl3/trtl3-go)
 ... soon in nodejs and java
 
+### 📝 API Examples
+
+#### Upload a File
+```bash
+curl -X POST http://localhost:7713/blobs \
+  -H "Authorization: Bearer your_token_here" \
+  -F "bucket=my-bucket" \
+  -F "blob=@/path/to/your/file.jpg"
+```
+
+#### List Files in Bucket
+```bash
+curl -X GET "http://localhost:7713/blobs?bucket=my-bucket" \
+  -H "Authorization: Bearer your_token_here"
+```
+
+#### Create Signed URL
+```bash
+curl -X POST http://localhost:7713/blobs/sign \
+  -H "Authorization: Bearer your_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bucket": "my-bucket",
+    "id": "file-id",
+    "ttl": 60,
+    "once": false
+  }'
+```
+
+#### Access File via Signed URL
+```bash
+curl -X GET "http://localhost:7713/b?sign=your_signed_token"
+```
+
+#### Download File Directly
+```bash
+curl -X GET "http://localhost:7713/blobs/download/my-bucket/file-id" \
+  -H "Authorization: Bearer your_token_here" \
+  -o downloaded_file.jpg
+```
+
+#### Health Check
+```bash
+curl -X GET "http://localhost:7713/health"
+```
+
 ---
 
 ## Features
 
-soon...
+### 🚀 Core Features
+
+- **File Upload & Storage**: Upload files with automatic ID generation and metadata tracking
+- **Bucket Organization**: Organize files into logical buckets (like folders)
+- **Signed URLs**: Generate temporary, secure URLs for file access without authentication
+- **REST API**: Complete RESTful API for all operations
+- **Authentication**: Token-based authentication for secure access
+- **Automatic Cleanup**: Background jobs to clean orphaned files and expired signatures
+
+### 🔧 Technical Features
+
+- **Async Processing**: Queue-based file processing with configurable workers
+- **Embedded Database**: Uses DuckDB for metadata storage (no external dependencies)
+- **Docker Ready**: Easy deployment with Docker and Docker Compose
+- **File System Storage**: Simple file-based storage with automatic directory creation
+- **TTL Support**: Configurable expiration for signed URLs (1-1440 minutes)
+- **One-time Access**: Optional single-use URLs for sensitive files
+
+### 📡 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/blobs` | Upload a file |
+| `GET` | `/blobs` | List files by bucket |
+| `GET` | `/blobs/:bucket/:id` | Get file metadata |
+| `DELETE` | `/blobs/:bucket/:id` | Delete a file |
+| `GET` | `/blobs/download/:bucket/:id` | Download file directly |
+| `POST` | `/blobs/sign` | Create signed URL |
+| `GET` | `/b?sign=TOKEN` | Access file via signed URL |
+| `GET` | `/health` | Health check endpoint |
+
+### 🛡️ Security Features
+
+- **Token Authentication**: Bearer token authentication for API access
+- **Signed URLs**: Time-limited, secure access to files
+- **Input Validation**: File type and size validation
+- **Secure File Naming**: Automatic secure file naming to prevent conflicts

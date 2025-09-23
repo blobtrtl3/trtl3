@@ -8,5 +8,6 @@ services:
     environment:
       - TOKEN=token
       - JOB_INTERVAL=3
+      - WORKERS=10
     volumes:
       - ./blobs:/app/blobs
