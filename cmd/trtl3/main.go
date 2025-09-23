@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/blobtrtl3/trtl3/internal/api/routes"
@@ -20,11 +19,6 @@ import (
 // @version 1.0
 // @description Blob storage api
 func main() {
-	jobInterval, err := strconv.Atoi(os.Getenv("JOB_INTERVAL"))
-	if err != nil {
-		jobInterval = 5
-	}
-
 	r := gin.Default()
 
 	conn := db.NewDbConn()
@@ -47,7 +41,7 @@ func main() {
 	routes.NewRoutesCtx(r, storage, signatures, *blobQueue).SetupRoutes()
 
 	job := jobs.NewJobs(storage, path, signatures)
-	go job.Start(time.Duration(jobInterval) * time.Minute)
+	go job.Start(5 * time.Minute)
 
 	r.Run(":7713")
 }
