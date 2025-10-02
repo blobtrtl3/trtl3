@@ -10,7 +10,7 @@ import (
 	"github.com/blobtrtl3/trtl3/internal/engine"
 	"github.com/blobtrtl3/trtl3/internal/infra/cache"
 	"github.com/blobtrtl3/trtl3/internal/queue"
-	"github.com/blobtrtl3/trtl3/shared"
+	"github.com/blobtrtl3/trtl3/internal/shared"
 	"github.com/gin-gonic/gin"
 )
 

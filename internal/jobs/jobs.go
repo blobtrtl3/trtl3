@@ -8,7 +8,7 @@ import (
 
 	"github.com/blobtrtl3/trtl3/internal/engine"
 	"github.com/blobtrtl3/trtl3/internal/infra/cache"
-	"github.com/blobtrtl3/trtl3/shared"
+	"github.com/blobtrtl3/trtl3/internal/shared"
 )
 
 type Jobs struct {

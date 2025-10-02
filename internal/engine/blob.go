@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/blobtrtl3/trtl3/internal/domain"
-	"github.com/blobtrtl3/trtl3/shared"
+	"github.com/blobtrtl3/trtl3/internal/shared"
 )
 
 type BlobEngine interface {
