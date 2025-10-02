@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/api/routes"
 	"github.com/blobtrtl3/trtl3/internal/cache"
 	"github.com/blobtrtl3/trtl3/internal/engine"
+	"github.com/blobtrtl3/trtl3/internal/http/router"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
 	"github.com/blobtrtl3/trtl3/internal/queue"
@@ -45,7 +45,7 @@ func main() {
 
 	blobQueue := queue.NewBlobQueue(workers, blobEngine)
 
-	routes.NewRoutesCtx(r, blobEngine, signaturesCache, *blobQueue).SetupRoutes()
+	router.NewRouterCtx(r, blobEngine, signaturesCache, *blobQueue).SetupRouter()
 
 	job := jobs.NewJobs(blobEngine, path, signaturesCache)
 	go job.Start(5 * time.Minute) // take interval from env

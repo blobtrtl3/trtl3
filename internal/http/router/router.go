@@ -1,25 +1,25 @@
-package routes
+package router
 
 import (
 	"time"
 
-	handler "github.com/blobtrtl3/trtl3/internal/api/handler/blob"
-	"github.com/blobtrtl3/trtl3/internal/api/middleware"
 	"github.com/blobtrtl3/trtl3/internal/cache"
 	"github.com/blobtrtl3/trtl3/internal/engine"
+	"github.com/blobtrtl3/trtl3/internal/http/handler"
+	"github.com/blobtrtl3/trtl3/internal/http/middleware"
 	"github.com/blobtrtl3/trtl3/internal/queue"
 	"github.com/gin-gonic/gin"
 )
 
-type RoutesCtx struct {
+type RouterCtx struct {
 	r               *gin.Engine
 	blobEngine      engine.BlobEngine
 	signaturesCache cache.SignaturesCache
 	blobQueue       queue.BlobQueue
 }
 
-func NewRoutesCtx(r *gin.Engine, be engine.BlobEngine, sc cache.SignaturesCache, q queue.BlobQueue) *RoutesCtx {
-	return &RoutesCtx{
+func NewRouterCtx(r *gin.Engine, be engine.BlobEngine, sc cache.SignaturesCache, q queue.BlobQueue) *RouterCtx {
+	return &RouterCtx{
 		r:               r,
 		blobEngine:      be,
 		signaturesCache: sc,
@@ -27,8 +27,8 @@ func NewRoutesCtx(r *gin.Engine, be engine.BlobEngine, sc cache.SignaturesCache,
 	}
 }
 
-func (rctx *RoutesCtx) SetupRoutes() {
-	blobHandler := handler.NewBlob(rctx.blobEngine, rctx.signaturesCache, rctx.blobQueue)
+func (rctx *RouterCtx) SetupRouter() {
+	blobHandler := handler.NewBlobHandler(rctx.blobEngine, rctx.signaturesCache, rctx.blobQueue)
 
 	// Health check endpoint (no authentication required)
 	rctx.r.GET("/health", func(c *gin.Context) {
