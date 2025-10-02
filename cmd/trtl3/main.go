@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/cache"
 	"github.com/blobtrtl3/trtl3/internal/engine"
 	"github.com/blobtrtl3/trtl3/internal/http/router"
+	"github.com/blobtrtl3/trtl3/internal/infra/cache"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
 	"github.com/blobtrtl3/trtl3/internal/queue"

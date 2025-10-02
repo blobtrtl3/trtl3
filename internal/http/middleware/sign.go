@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/cache"
+	"github.com/blobtrtl3/trtl3/internal/infra/cache"
 	"github.com/gin-gonic/gin"
 )
 

@@ -3,10 +3,10 @@ package router
 import (
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/cache"
 	"github.com/blobtrtl3/trtl3/internal/engine"
 	"github.com/blobtrtl3/trtl3/internal/http/handler"
 	"github.com/blobtrtl3/trtl3/internal/http/middleware"
+	"github.com/blobtrtl3/trtl3/internal/infra/cache"
 	"github.com/blobtrtl3/trtl3/internal/queue"
 	"github.com/gin-gonic/gin"
 )
