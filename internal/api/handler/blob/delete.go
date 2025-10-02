@@ -25,7 +25,7 @@ func (bh *BlobHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	_, err := bh.storage.Delete(bucket, id)
+	_, err := bh.blobEngine.Delete(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob by in bucket: %s with id: %s", bucket, id)})
 		return

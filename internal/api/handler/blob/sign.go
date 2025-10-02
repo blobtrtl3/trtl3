@@ -34,7 +34,7 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 		return
 	}
 
-	if _, err := bh.storage.FindUnique(req.Bucket, req.ID); err != nil {
+	if _, err := bh.blobEngine.FindUnique(req.Bucket, req.ID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "verify the data you sent and try again",
 		})
@@ -44,7 +44,7 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 	now := time.Now()
 	signature := fmt.Sprintf("%s%s", shared.GenShortID(), now.Format("050204")) // format to SSDDMM
 
-	bh.signatures.Set(
+	bh.signaturesCache.Set(
 		signature,
 		domain.Signature{
 			Bucket: req.Bucket,

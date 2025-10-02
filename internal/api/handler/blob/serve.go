@@ -30,7 +30,7 @@ func (bh *BlobHandler) Serve(c *gin.Context) {
 		return
 	}
 
-	blobInfo, err := bh.storage.FindUnique(bucket.(string), id.(string))
+	blobInfo, err := bh.blobEngine.FindUnique(bucket.(string), id.(string))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "blob not found, check your data and try again"})
 		return

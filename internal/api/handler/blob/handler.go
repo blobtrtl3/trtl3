@@ -1,25 +1,25 @@
 package handler
 
 import (
+	"github.com/blobtrtl3/trtl3/internal/cache"
+	"github.com/blobtrtl3/trtl3/internal/engine/blob"
 	"github.com/blobtrtl3/trtl3/internal/queue"
-	"github.com/blobtrtl3/trtl3/internal/repo/signatures"
-	"github.com/blobtrtl3/trtl3/internal/repo/storage"
 )
 
 type BlobHandler struct {
-	storage    storage.Storage
-	signatures signatures.Signatures
+	blobEngine    blob.BlobEngine
+	signaturesCache cache.SignaturesCache
 	bloQueue   queue.BlobQueue
 }
 
 func NewBlob(
-	st storage.Storage,
-	sg signatures.Signatures,
+	be blob.BlobEngine,
+	sc cache.SignaturesCache,
 	bq queue.BlobQueue,
 ) *BlobHandler {
 	return &BlobHandler{
-		storage:    st,
-		signatures: sg,
+		blobEngine:    be,
+		signaturesCache: sc,
 		bloQueue:   bq,
 	}
 }

@@ -21,7 +21,7 @@ type BlobEngineImpl struct {
 	dir string
 }
 
-func NewBlobStorage(db *sql.DB, dir string) BlobEngine {
+func NewBlobEngine(db *sql.DB, dir string) BlobEngine {
 	return &BlobEngineImpl{
 		db:  db,
 		dir: dir,

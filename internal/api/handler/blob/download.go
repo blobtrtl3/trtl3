@@ -25,7 +25,7 @@ func (bh *BlobHandler) Download(c *gin.Context) {
 		return
 	}
 
-	blobBytes, err := bh.storage.Download(bucket, id)
+	blobBytes, err := bh.blobEngine.Download(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s with id: %s", bucket, id)})
 		return

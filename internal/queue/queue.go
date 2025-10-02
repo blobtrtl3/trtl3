@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/blobtrtl3/trtl3/internal/domain"
-	"github.com/blobtrtl3/trtl3/internal/repo/storage"
+	"github.com/blobtrtl3/trtl3/internal/engine/blob"
 )
 
 type BlobTask struct {
@@ -17,14 +17,14 @@ type BlobTask struct {
 type BlobQueue struct {
 	queue   chan BlobTask
 	wg      *sync.WaitGroup
-	storage storage.Storage
+	blobEngine blob.BlobEngine
 }
 
-func NewBlobQueue(workers int, s storage.Storage) *BlobQueue {
+func NewBlobQueue(workers int, be blob.BlobEngine) *BlobQueue {
 	q := &BlobQueue{
 		queue:   make(chan BlobTask, 24),
 		wg:      &sync.WaitGroup{},
-		storage: s,
+		blobEngine: be,
 	}
 
 	for range workers {

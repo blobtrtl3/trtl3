@@ -5,30 +5,30 @@ import (
 
 	handler "github.com/blobtrtl3/trtl3/internal/api/handler/blob"
 	"github.com/blobtrtl3/trtl3/internal/api/middleware"
+	"github.com/blobtrtl3/trtl3/internal/cache"
+	"github.com/blobtrtl3/trtl3/internal/engine/blob"
 	"github.com/blobtrtl3/trtl3/internal/queue"
-	"github.com/blobtrtl3/trtl3/internal/repo/signatures"
-	"github.com/blobtrtl3/trtl3/internal/repo/storage"
 	"github.com/gin-gonic/gin"
 )
 
 type RoutesCtx struct {
 	r          *gin.Engine
-	storage    storage.Storage
-	signatures signatures.Signatures
+	blobEngine    blob.BlobEngine
+	signaturesCache cache.SignaturesCache
 	blobQueue  queue.BlobQueue
 }
 
-func NewRoutesCtx(r *gin.Engine, st storage.Storage, si signatures.Signatures, q queue.BlobQueue) *RoutesCtx {
+func NewRoutesCtx(r *gin.Engine, be blob.BlobEngine, sc cache.SignaturesCache, q queue.BlobQueue) *RoutesCtx {
 	return &RoutesCtx{
 		r:          r,
-		storage:    st,
-		signatures: si,
+		blobEngine:    be,
+		signaturesCache: sc,
 		blobQueue:  q,
 	}
 }
 
 func (rctx *RoutesCtx) SetupRoutes() {
-	blobHandler := handler.NewBlob(rctx.storage, rctx.signatures, rctx.blobQueue)
+	blobHandler := handler.NewBlob(rctx.blobEngine, rctx.signaturesCache, rctx.blobQueue)
 
 	// Health check endpoint (no authentication required)
 	rctx.r.GET("/health", func(c *gin.Context) {
@@ -51,7 +51,7 @@ func (rctx *RoutesCtx) SetupRoutes() {
 		protected.POST("/sign", blobHandler.Sign)
 	}
 
-	serve := rctx.r.Group("/b", middleware.SignMiddleware(rctx.signatures))
+	serve := rctx.r.Group("/b", middleware.SignMiddleware(rctx.signaturesCache))
 	{
 		serve.GET("", blobHandler.Serve)
 	}

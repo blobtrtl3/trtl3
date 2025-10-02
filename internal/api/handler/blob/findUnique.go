@@ -25,7 +25,7 @@ func (bh *BlobHandler) FindUnique(c *gin.Context) {
 		return
 	}
 
-	blobInfo, err := bh.storage.FindUnique(bucket, id)
+	blobInfo, err := bh.blobEngine.FindUnique(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s with id: %s", bucket, id)})
 		return

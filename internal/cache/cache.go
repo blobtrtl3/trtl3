@@ -11,7 +11,7 @@ type SignaturesCache interface {
 
 type MemSignaturesCache map[string]domain.Signature
 
-func NewSignaturesCache() SignaturesCache {
+func NewMemSignaturesCache() SignaturesCache {
 	return MemSignaturesCache{}
 }
 

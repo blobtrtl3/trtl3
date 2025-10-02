@@ -23,7 +23,7 @@ func (bh *BlobHandler) FindByBucket(c *gin.Context) {
 		return
 	}
 
-	blobsInfos, err := bh.storage.FindByBucket(bucket)
+	blobsInfos, err := bh.blobEngine.FindByBucket(bucket)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s", bucket)})
 		return
