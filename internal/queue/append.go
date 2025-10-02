@@ -8,7 +8,7 @@ import (
 
 func (bq *BlobQueue) Append(blobInfo *domain.BlobInfo, r io.Reader) error {
 	task := BlobTask{
-		Info:  blobInfo,
+		Info: blobInfo,
 		Blob: r,
 	}
 

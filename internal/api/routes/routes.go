@@ -6,24 +6,24 @@ import (
 	handler "github.com/blobtrtl3/trtl3/internal/api/handler/blob"
 	"github.com/blobtrtl3/trtl3/internal/api/middleware"
 	"github.com/blobtrtl3/trtl3/internal/cache"
-	"github.com/blobtrtl3/trtl3/internal/engine/blob"
+	"github.com/blobtrtl3/trtl3/internal/engine"
 	"github.com/blobtrtl3/trtl3/internal/queue"
 	"github.com/gin-gonic/gin"
 )
 
 type RoutesCtx struct {
-	r          *gin.Engine
-	blobEngine    blob.BlobEngine
+	r               *gin.Engine
+	blobEngine      engine.BlobEngine
 	signaturesCache cache.SignaturesCache
-	blobQueue  queue.BlobQueue
+	blobQueue       queue.BlobQueue
 }
 
-func NewRoutesCtx(r *gin.Engine, be blob.BlobEngine, sc cache.SignaturesCache, q queue.BlobQueue) *RoutesCtx {
+func NewRoutesCtx(r *gin.Engine, be engine.BlobEngine, sc cache.SignaturesCache, q queue.BlobQueue) *RoutesCtx {
 	return &RoutesCtx{
-		r:          r,
-		blobEngine:    be,
+		r:               r,
+		blobEngine:      be,
 		signaturesCache: sc,
-		blobQueue:  q,
+		blobQueue:       q,
 	}
 }
 
@@ -33,8 +33,8 @@ func (rctx *RoutesCtx) SetupRoutes() {
 	// Health check endpoint (no authentication required)
 	rctx.r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status": "healthy",
-			"service": "trtl3",
+			"status":    "healthy",
+			"service":   "trtl3",
 			"timestamp": time.Now().UTC(),
 		})
 	})

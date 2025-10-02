@@ -37,4 +37,3 @@ func (ms MemSignaturesCache) FindAll() []string {
 	}
 	return keys
 }
-

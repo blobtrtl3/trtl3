@@ -8,7 +8,7 @@ import (
 
 	"github.com/blobtrtl3/trtl3/internal/api/routes"
 	"github.com/blobtrtl3/trtl3/internal/cache"
-	"github.com/blobtrtl3/trtl3/internal/engine/blob"
+	"github.com/blobtrtl3/trtl3/internal/engine"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
 	"github.com/blobtrtl3/trtl3/internal/queue"
@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
 	}
 
-	blobEngine := blob.NewBlobEngine(conn, path)
+	blobEngine := engine.NewBlobEngine(conn, path)
 	signaturesCache := cache.NewMemSignaturesCache()
 
 	workersStr := os.Getenv("WORKERS")

@@ -2,24 +2,24 @@ package handler
 
 import (
 	"github.com/blobtrtl3/trtl3/internal/cache"
-	"github.com/blobtrtl3/trtl3/internal/engine/blob"
+	"github.com/blobtrtl3/trtl3/internal/engine"
 	"github.com/blobtrtl3/trtl3/internal/queue"
 )
 
 type BlobHandler struct {
-	blobEngine    blob.BlobEngine
+	blobEngine      engine.BlobEngine
 	signaturesCache cache.SignaturesCache
-	bloQueue   queue.BlobQueue
+	bloQueue        queue.BlobQueue
 }
 
 func NewBlob(
-	be blob.BlobEngine,
+	be engine.BlobEngine,
 	sc cache.SignaturesCache,
 	bq queue.BlobQueue,
 ) *BlobHandler {
 	return &BlobHandler{
-		blobEngine:    be,
+		blobEngine:      be,
 		signaturesCache: sc,
-		bloQueue:   bq,
+		bloQueue:        bq,
 	}
 }
