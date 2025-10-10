@@ -4,7 +4,7 @@ import "log"
 
 func (bq *BlobQueue) worker() {
 	for task := range bq.queue {
-		_, err := bq.storage.Save(task.Info, task.Blob)
+		_, err := bq.blobEngine.Save(task.Info, task.Blob)
 		if err != nil {
 			task.Retries++
 			if task.Retries <= 3 {

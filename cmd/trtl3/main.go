@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/api/routes"
-	"github.com/blobtrtl3/trtl3/internal/domain"
+	"github.com/blobtrtl3/trtl3/internal/engine"
+	"github.com/blobtrtl3/trtl3/internal/http/router"
+	"github.com/blobtrtl3/trtl3/internal/infra/cache"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
 	"github.com/blobtrtl3/trtl3/internal/queue"
-	"github.com/blobtrtl3/trtl3/internal/repo/signatures"
-	"github.com/blobtrtl3/trtl3/internal/repo/storage"
+	"github.com/blobtrtl3/trtl3/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,18 +25,15 @@ func main() {
 	conn := db.NewDbConn()
 	defer conn.Close()
 
-	signeds := map[string]domain.Signature{}
-
 	var path = "blobs"
 
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
 	}
 
-	storage := storage.NewBlobStorage(conn, path)
-	signatures := signatures.NewMapSignatures(signeds)
+	blobEngine := engine.NewBlobEngine(conn, path)
+	signaturesCache := cache.NewMemSignaturesCache()
 
-	// Get number of workers from environment variable, default to 10
 	workersStr := os.Getenv("WORKERS")
 	workers := 10 // default value
 	if workersStr != "" {
@@ -47,12 +44,14 @@ func main() {
 		}
 	}
 
-	blobQueue := queue.NewBlobQueue(workers, storage)
+	blobQueue := queue.NewBlobQueue(workers, blobEngine)
 
-	routes.NewRoutesCtx(r, storage, signatures, *blobQueue).SetupRoutes()
+	blobService := service.NewBlobService(blobEngine, signaturesCache, blobQueue)
 
-	job := jobs.NewJobs(storage, path, signatures)
-	go job.Start(5 * time.Minute)
+	router.NewRouterCtx(r, blobService, signaturesCache).SetupRouter()
+
+	job := jobs.NewJobs(blobEngine, path, signaturesCache)
+	go job.Start(5 * time.Minute) // take interval from env
 
 	r.Run(":7713")
 }
