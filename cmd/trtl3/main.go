@@ -12,6 +12,7 @@ import (
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
 	"github.com/blobtrtl3/trtl3/internal/queue"
+	"github.com/blobtrtl3/trtl3/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -45,7 +46,9 @@ func main() {
 
 	blobQueue := queue.NewBlobQueue(workers, blobEngine)
 
-	router.NewRouterCtx(r, blobEngine, signaturesCache, *blobQueue).SetupRouter()
+	blobService := service.NewBlobService(blobEngine, signaturesCache, blobQueue)
+
+	router.NewRouterCtx(r, blobService, signaturesCache).SetupRouter()
 
 	job := jobs.NewJobs(blobEngine, path, signaturesCache)
 	go job.Start(5 * time.Minute) // take interval from env

@@ -3,33 +3,18 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/domain"
-	"github.com/blobtrtl3/trtl3/internal/engine"
-	"github.com/blobtrtl3/trtl3/internal/infra/cache"
-	"github.com/blobtrtl3/trtl3/internal/queue"
-	"github.com/blobtrtl3/trtl3/internal/shared"
+	"github.com/blobtrtl3/trtl3/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type BlobHandler struct {
-	blobEngine      engine.BlobEngine
-	signaturesCache cache.SignaturesCache
-	bloQueue        queue.BlobQueue
+	blobService service.BlobService
 }
 
-func NewBlobHandler(
-	be engine.BlobEngine,
-	sc cache.SignaturesCache,
-	bq queue.BlobQueue,
-) *BlobHandler {
-	return &BlobHandler{
-		blobEngine:      be,
-		signaturesCache: sc,
-		bloQueue:        bq,
-	}
+func NewBlobHandler(bs service.BlobService) *BlobHandler {
+	return &BlobHandler{blobService: bs}
 }
 
 type saveBlobReq struct {
@@ -66,16 +51,14 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 	}
 	defer fileBlob.Close()
 
-	blobInfo := &domain.BlobInfo{
-		ID:        shared.GenShortID(),
-		Bucket:    req.Bucket,
-		Mime:      blobMultipart.Header.Get("Content-Type"),
-		CreatedAt: time.Now(),
-		Size:      blobMultipart.Size, // NOTE: size in bytes value
-	}
-
-	if err = bh.bloQueue.Append(blobInfo, fileBlob); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "could not save the blob, try again"})
+	blobInfo, err := bh.blobService.Save(
+		req.Bucket,
+		blobMultipart.Header.Get("Content-Type"),
+		blobMultipart.Size, // NOTE: size in bytes value
+		fileBlob,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, we had an error, try again"})
 		return
 	}
 
@@ -93,12 +76,7 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 func (bh *BlobHandler) FindByBucket(c *gin.Context) {
 	bucket := c.Query("bucket")
 
-	if bucket == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket sent"})
-		return
-	}
-
-	blobsInfos, err := bh.blobEngine.FindByBucket(bucket)
+	blobsInfos, err := bh.blobService.FindByBucket(bucket)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s", bucket)})
 		return
@@ -125,12 +103,7 @@ func (bh *BlobHandler) FindUnique(c *gin.Context) {
 	bucket := c.Param("bucket")
 	id := c.Param("id")
 
-	if id == "" && bucket == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id sent"})
-		return
-	}
-
-	blobInfo, err := bh.blobEngine.FindUnique(bucket, id)
+	blobInfo, err := bh.blobService.FindUnique(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s with id: %s", bucket, id)})
 		return
@@ -152,12 +125,7 @@ func (bh *BlobHandler) Download(c *gin.Context) {
 	bucket := c.Param("bucket")
 	id := c.Param("id")
 
-	if bucket == "" || id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id sent"})
-		return
-	}
-
-	blobBytes, err := bh.blobEngine.Download(bucket, id)
+	blobBytes, err := bh.blobService.Download(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s with id: %s", bucket, id)})
 		return
@@ -184,12 +152,7 @@ func (bh *BlobHandler) Delete(c *gin.Context) {
 	bucket := c.Param("bucket")
 	id := c.Param("id")
 
-	if bucket == "" && id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "verify the bucket or id sent"})
-		return
-	}
-
-	_, err := bh.blobEngine.Delete(bucket, id)
+	_, err := bh.blobService.Delete(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob by in bucket: %s with id: %s", bucket, id)})
 		return
@@ -218,19 +181,16 @@ func (bh *BlobHandler) Serve(c *gin.Context) {
 		return
 	}
 
-	blobInfo, err := bh.blobEngine.FindUnique(bucket.(string), id.(string))
+	serveInfo, err := bh.blobService.Serve(bucket.(string), id.(string))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "blob not found, check your data and try again"})
+		c.JSON(http.StatusNotFound, gin.H{"message": "we had an error, sorry try again"})
 		return
 	}
 
-	blobName := shared.GenBlobName(blobInfo.Bucket, blobInfo.ID)
-
-	c.Header("Content-Type", blobInfo.Mime)
+	c.Header("Content-Type", serveInfo.Mime)
 	c.Header("Content-Disposition", fmt.Sprintf("inline; filename=%s", time.Now().Format("020504"))) //DDSSMM
 
-	path := filepath.Join("blobs", blobName)
-	c.File(path)
+	c.File(serveInfo.Path)
 }
 
 type signBlobReq struct {
@@ -257,25 +217,18 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 		return
 	}
 
-	if _, err := bh.blobEngine.FindUnique(req.Bucket, req.ID); err != nil {
+	signature, err := bh.blobService.Sign(
+		req.Bucket,
+		req.ID,
+		req.TTL,
+		req.Once,
+	)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "verify the data you sent and try again",
 		})
 		return
 	}
-
-	now := time.Now()
-	signature := fmt.Sprintf("%s%s", shared.GenShortID(), now.Format("050204")) // format to SSDDMM
-
-	bh.signaturesCache.Set(
-		signature,
-		domain.Signature{
-			Bucket: req.Bucket,
-			ID:     req.ID,
-			TTL:    now.Add(time.Duration(req.TTL) * time.Minute),
-			Once:   req.Once,
-		},
-	)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"url": fmt.Sprintf("http://localhost:7713/b?sign=%s", signature),

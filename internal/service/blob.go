@@ -15,7 +15,7 @@ import (
 )
 
 type BlobService interface {
-	Save(bucket, mime string, size int64, r io.Reader) (bool, error)
+	Save(bucket, mime string, size int64, r io.Reader) (*domain.BlobInfo, error)
 	FindByBucket(bucket string) ([]domain.BlobInfo, error)
 	FindUnique(bucket, id string) (*domain.BlobInfo, error)
 	Delete(bucket, id string) (bool, error)
@@ -27,13 +27,13 @@ type BlobService interface {
 type BlobServiceImpl struct {
 	blobEngine      engine.BlobEngine
 	signaturesCache cache.SignaturesCache
-	blobQueue       queue.BlobQueue
+	blobQueue       *queue.BlobQueue
 }
 
-func NewBlobServiceImpl(
+func NewBlobService(
 	be engine.BlobEngine,
 	sc cache.SignaturesCache,
-	bq queue.BlobQueue,
+	bq *queue.BlobQueue,
 ) BlobService {
 	return &BlobServiceImpl{
 		blobEngine:      be,
@@ -42,7 +42,7 @@ func NewBlobServiceImpl(
 	}
 }
 
-func (bs *BlobServiceImpl) Save(bucket, mime string, size int64, r io.Reader) (bool, error) {
+func (bs *BlobServiceImpl) Save(bucket, mime string, size int64, r io.Reader) (*domain.BlobInfo, error) {
 	blobInfo := &domain.BlobInfo{
 		ID:        shared.GenShortID(),
 		Bucket:    bucket,
@@ -52,10 +52,10 @@ func (bs *BlobServiceImpl) Save(bucket, mime string, size int64, r io.Reader) (b
 	}
 
 	if err := bs.blobQueue.Append(blobInfo, r); err != nil {
-		return false, err
+		return &domain.BlobInfo{}, err
 	}
 
-	return true, nil
+	return blobInfo, nil
 }
 
 func (bs *BlobServiceImpl) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
@@ -77,7 +77,7 @@ func (bs *BlobServiceImpl) FindByBucket(bucket string) ([]domain.BlobInfo, error
 
 func (bs *BlobServiceImpl) FindUnique(bucket, id string) (*domain.BlobInfo, error) {
 	if id == "" || bucket == "" {
-		return &domain.BlobInfo{}, fmt.Errorf("the bucket or id field is empty", bucket)
+		return &domain.BlobInfo{}, fmt.Errorf("the bucket or id field is empty %s", bucket)
 	}
 
 	blobInfo, err := bs.blobEngine.FindUnique(bucket, id)
@@ -90,7 +90,7 @@ func (bs *BlobServiceImpl) FindUnique(bucket, id string) (*domain.BlobInfo, erro
 
 func (bs *BlobServiceImpl) Download(bucket, id string) ([]byte, error) {
 	if id == "" || bucket == "" {
-		return []byte{}, fmt.Errorf("the bucket or id field is empty", bucket)
+		return []byte{}, fmt.Errorf("the bucket or id field is empty %s", bucket)
 	}
 
 	b, err := bs.blobEngine.Download(bucket, id)
@@ -103,7 +103,7 @@ func (bs *BlobServiceImpl) Download(bucket, id string) ([]byte, error) {
 
 func (bs *BlobServiceImpl) Delete(bucket, id string) (bool, error) {
 	if id == "" || bucket == "" {
-		return false, fmt.Errorf("the bucket or id field is empty", bucket)
+		return false, fmt.Errorf("the bucket or id field is empty %s", bucket)
 	}
 
 	_, err := bs.blobEngine.Delete(bucket, id)
@@ -115,14 +115,14 @@ func (bs *BlobServiceImpl) Delete(bucket, id string) (bool, error) {
 }
 
 type ServeInfo struct {
-	key  string
-	mime string
-	path string
+	Key  string
+	Mime string
+	Path string
 }
 
 func (bs *BlobServiceImpl) Serve(bucket, id string) (*ServeInfo, error) {
 	if id == "" || bucket == "" {
-		return &ServeInfo{}, fmt.Errorf("the bucket or id field is empty", bucket)
+		return &ServeInfo{}, fmt.Errorf("the bucket or id field is empty %s", bucket)
 	}
 
 	info, err := bs.blobEngine.FindUnique(bucket, id)
