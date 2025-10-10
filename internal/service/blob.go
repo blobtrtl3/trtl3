@@ -25,13 +25,13 @@ type BlobService interface {
 }
 
 type BlobServiceImpl struct {
-	blobEngine      engine.BlobEngine
+	blobEngine      *engine.BlobEngine
 	signaturesCache cache.SignaturesCache
 	blobQueue       *queue.BlobQueue
 }
 
 func NewBlobService(
-	be engine.BlobEngine,
+	be *engine.BlobEngine,
 	sc cache.SignaturesCache,
 	bq *queue.BlobQueue,
 ) BlobService {

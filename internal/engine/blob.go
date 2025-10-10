@@ -10,28 +10,19 @@ import (
 	"github.com/blobtrtl3/trtl3/internal/shared"
 )
 
-type BlobEngine interface {
-	Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, error)
-	FindByBucket(bucket string) ([]domain.BlobInfo, error)
-	FindUnique(bucket string, id string) (*domain.BlobInfo, error)
-	Delete(bucket string, id string) (bool, error)
-	Download(bucket string, id string) ([]byte, error) // TODO: not load in mem
-	FindAll() ([]domain.BlobInfo, error)
-}
-
-type BlobEngineImpl struct {
+type BlobEngine struct {
 	db  *sql.DB
 	dir string
 }
 
-func NewBlobEngine(db *sql.DB, dir string) BlobEngine {
-	return &BlobEngineImpl{
+func NewBlobEngine(db *sql.DB, dir string) *BlobEngine {
+	return &BlobEngine{
 		db:  db,
 		dir: dir,
 	}
 }
 
-func (be *BlobEngineImpl) Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, error) {
+func (be *BlobEngine) Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, error) {
 	var exists bool
 
 	if err := be.db.QueryRow(
@@ -83,7 +74,7 @@ func (be *BlobEngineImpl) Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, er
 	return true, nil
 }
 
-func (be *BlobEngineImpl) FindAll() ([]domain.BlobInfo, error) {
+func (be *BlobEngine) FindAll() ([]domain.BlobInfo, error) {
 	rows, err := be.db.Query("SELECT * FROM blobsinfo")
 	if err != nil {
 		return nil, err
@@ -105,7 +96,7 @@ func (be *BlobEngineImpl) FindAll() ([]domain.BlobInfo, error) {
 	return blobsInfos, nil
 }
 
-func (be *BlobEngineImpl) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
+func (be *BlobEngine) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
 	rows, err := be.db.Query("SELECT * FROM blobsinfo WHERE bucket=?", bucket)
 	if err != nil {
 		return nil, err
@@ -127,7 +118,7 @@ func (be *BlobEngineImpl) FindByBucket(bucket string) ([]domain.BlobInfo, error)
 	return blobsInfos, nil
 }
 
-func (be *BlobEngineImpl) FindUnique(bucket string, id string) (*domain.BlobInfo, error) {
+func (be *BlobEngine) FindUnique(bucket string, id string) (*domain.BlobInfo, error) {
 	var blobInfo domain.BlobInfo
 
 	if err := be.db.QueryRow("SELECT * FROM blobsinfo WHERE bucket=? AND id=?", bucket, id).Scan(
@@ -143,7 +134,7 @@ func (be *BlobEngineImpl) FindUnique(bucket string, id string) (*domain.BlobInfo
 	return &blobInfo, nil
 }
 
-func (be *BlobEngineImpl) Download(bucket string, id string) ([]byte, error) {
+func (be *BlobEngine) Download(bucket string, id string) ([]byte, error) {
 	blob, err := os.ReadFile(filepath.Join(be.dir, shared.GenBlobName(bucket, id)))
 	if err != nil {
 		return nil, err
@@ -152,7 +143,7 @@ func (be *BlobEngineImpl) Download(bucket string, id string) ([]byte, error) {
 	return blob, nil
 }
 
-func (be *BlobEngineImpl) Delete(bucket string, id string) (bool, error) {
+func (be *BlobEngine) Delete(bucket string, id string) (bool, error) {
 	tx, err := be.db.Begin()
 	if err != nil {
 		return false, err

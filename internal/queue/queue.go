@@ -17,10 +17,10 @@ type BlobTask struct {
 type BlobQueue struct {
 	queue      chan BlobTask
 	wg         *sync.WaitGroup
-	blobEngine engine.BlobEngine
+	blobEngine *engine.BlobEngine
 }
 
-func NewBlobQueue(workers int, be engine.BlobEngine) *BlobQueue {
+func NewBlobQueue(workers int, be *engine.BlobEngine) *BlobQueue {
 	q := &BlobQueue{
 		queue:      make(chan BlobTask, 24),
 		wg:         &sync.WaitGroup{},

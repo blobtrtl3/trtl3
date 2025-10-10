@@ -12,12 +12,12 @@ import (
 )
 
 type Jobs struct {
-	blobEngine      engine.BlobEngine
+	blobEngine      *engine.BlobEngine
 	signaturesCache cache.SignaturesCache
 	dir             string
 }
 
-func NewJobs(be engine.BlobEngine, dir string, sc cache.SignaturesCache) *Jobs {
+func NewJobs(be *engine.BlobEngine, dir string, sc cache.SignaturesCache) *Jobs {
 	return &Jobs{blobEngine: be, dir: dir, signaturesCache: sc}
 }
 
