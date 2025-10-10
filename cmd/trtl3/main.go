@@ -44,6 +44,16 @@ func main() {
 		}
 	}
 
+	jobIntervalStr := os.Getenv("JOB_INTERVAL")
+	jobInterval := 10 // default value
+	if jobIntervalStr != "" {
+		if j, err := strconv.Atoi(jobIntervalStr); err == nil && j > 0 {
+			jobInterval = j
+		} else {
+			log.Printf("Invalid JOB_INTERVAL value '%s', using default: %d", jobIntervalStr, jobInterval)
+		}
+	}
+
 	blobQueue := queue.NewBlobQueue(workers, blobEngine)
 
 	blobService := service.NewBlobService(blobEngine, signaturesCache, blobQueue)
@@ -51,7 +61,7 @@ func main() {
 	router.NewRouterCtx(r, blobService, signaturesCache).SetupRouter()
 
 	job := jobs.NewJobs(blobEngine, path, signaturesCache)
-	go job.Start(5 * time.Minute) // take interval from env
+	go job.Start(time.Duration(jobInterval) * time.Minute) // take interval from env
 
 	r.Run(":7713")
 }

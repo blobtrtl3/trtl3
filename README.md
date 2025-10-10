@@ -45,6 +45,7 @@ services:
     environment:
       - TOKEN=your_token_here
       - WORKERS=10
+      - JOB_INTERVAL=5
 ```
 
 ### 🔧 Environment Variables
