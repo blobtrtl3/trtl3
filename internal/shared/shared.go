@@ -7,7 +7,7 @@ import (
 )
 
 func GenShortID() string {
-	n := 6
+	n := 10
 	b := make([]byte, n)
 	rand.Read(b)
 	return base64.URLEncoding.EncodeToString(b)[:n]

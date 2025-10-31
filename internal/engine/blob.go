@@ -23,20 +23,6 @@ func NewBlobEngine(db *sql.DB, dir string) *BlobEngine {
 }
 
 func (be *BlobEngine) Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, error) {
-	var exists bool
-
-	if err := be.db.QueryRow(
-		"SELECT EXISTS(SELECT 1 FROM blobsinfo WHERE id=? AND bucket=?)",
-		blobInfo.ID, blobInfo.Bucket,
-	).Scan(&exists); err != nil {
-		return false, err
-	}
-
-	if exists {
-		blobInfo.ID = shared.GenShortID()
-		return be.Save(blobInfo, r)
-	}
-
 	tx, err := be.db.Begin()
 	if err != nil {
 		return false, err
