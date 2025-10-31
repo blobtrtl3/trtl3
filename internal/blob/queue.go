@@ -1,11 +1,14 @@
 package blob
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/blobtrtl3/trtl3/pkg/domain"
+	"github.com/redis/go-redis/v9"
 )
 
 type Task struct {
@@ -15,51 +18,60 @@ type Task struct {
 }
 
 type Queue struct {
-	queue      chan Task
+	redis      *redis.Client
 	wg         *sync.WaitGroup
 	blobRepo *Repository
+	ctx context.Context
 }
 
-func NewQueue(workers int, br *Repository) *Queue {
-	q := &Queue{
-		queue:      make(chan Task, 24),
+func NewQueue(br *Repository, r *redis.Client, ctx context.Context) *Queue {
+	queue := &Queue{
+		redis:      r,
 		wg:         &sync.WaitGroup{},
 		blobRepo: br,
+		ctx: ctx,
 	}
 
-	for range workers {
-		go q.worker()
-	}
-
-	return q
+	return queue
 }
 
-
-func (q *Queue) Append(blobInfo *domain.BlobInfo, r io.Reader) error {
+func (q *Queue) Push(blobInfo *domain.BlobInfo, r io.Reader) error {
 	task := Task{
 		Info: blobInfo,
 		Blob: r,
 	}
 
-	q.wg.Add(1)
-	q.queue <- task
+	if err := q.redis.LPush(q.ctx, "blobs.queue", task).Err(); err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func (q *Queue) worker() {
-	for task := range q.queue {
-		_, err := q.blobRepo.Save(task.Info, task.Blob)
-		if err != nil {
-			task.Retries++
-			if task.Retries <= 3 {
-				log.Printf("retrying to save blob %s (attempt %d)", task.Info.ID, task.Retries)
-				q.Append(task.Info, task.Blob)
-			} else {
-				log.Printf("failed to save blob %s after %d attempts: %s", task.Info.ID, task.Retries, err)
-			}
-		}
+func (q *Queue) SetupWorkers(workers int) {
+	for i := 0; i < workers; i++ {
+		q.wg.Add(1)
+		go func(id int) {
+			defer q.wg.Done()
+			for {
+				values, err := q.redis.BLPop(q.ctx, 0, "logs.queue").Result()
+				if err != nil {
+					continue
+				}
 
-		q.wg.Done()
+				var task Task
+				if err := json.Unmarshal([]byte(values[1]), &task); err != nil {
+					//retry
+					continue
+				}
+
+ 				if _, err := q.blobRepo.Save(task.Info, task.Blob); err != nil {
+					fmt.Print(err)
+					continue
+				}
+
+				fmt.Printf("worker id[%d]", id)
+			}
+		}(i+1)
 	}
 }

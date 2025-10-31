@@ -49,7 +49,7 @@ func (s *service) Save(bucket, mime string, size int64, r io.Reader) (*domain.Bl
 		Size:      size, // NOTE: size in bytes value
 	}
 
-	if err := s.queue.Append(blobInfo, r); err != nil {
+	if err := s.queue.Push(blobInfo, r); err != nil {
 		return &domain.BlobInfo{}, err
 	}
 

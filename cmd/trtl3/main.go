@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"strconv"
@@ -28,6 +29,10 @@ func main() {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
 	}
 
+	ctx := context.Background()
+
+	redisClient := infra.NewRedistClient(ctx)
+
 	blobRepo := blob.NewRepository(conn, path)
 	signaturesCache := infra.NewMemSignaturesCache()
 
@@ -51,7 +56,8 @@ func main() {
 		}
 	}
 
-	blobQueue := blob.NewQueue(workers, blobRepo)
+	blobQueue := blob.NewQueue(blobRepo, redisClient, ctx)
+	blobQueue.SetupWorkers(workers)
 
 	blobService := blob.NewService(blobRepo, signaturesCache, blobQueue)
 
