@@ -7,17 +7,17 @@ import (
 	"time"
 
 	"github.com/blobtrtl3/trtl3/internal/blob"
-	"github.com/blobtrtl3/trtl3/internal/infra/cache"
+	"github.com/blobtrtl3/trtl3/internal/infra"
 	"github.com/blobtrtl3/trtl3/internal/shared"
 )
 
 type Jobs struct {
 	blobRepo      *blob.Repository
-	signaturesCache cache.SignaturesCache
+	signaturesCache infra.SignaturesCache
 	dir             string
 }
 
-func NewJobs(br *blob.Repository, dir string, sc cache.SignaturesCache) *Jobs {
+func NewJobs(br *blob.Repository, dir string, sc infra.SignaturesCache) *Jobs {
 	return &Jobs{blobRepo: br, dir: dir, signaturesCache: sc}
 }
 

@@ -5,17 +5,17 @@ import (
 
 	"github.com/blobtrtl3/trtl3/internal/blob"
 	"github.com/blobtrtl3/trtl3/internal/http/middleware"
-	"github.com/blobtrtl3/trtl3/internal/infra/cache"
+	"github.com/blobtrtl3/trtl3/internal/infra"
 	"github.com/gin-gonic/gin"
 )
 
 type RouterCtx struct {
 	r               *gin.Engine
 	blobService     blob.Service
-	signaturesCache cache.SignaturesCache
+	signaturesCache infra.SignaturesCache
 }
 
-func NewRouterCtx(r *gin.Engine, bs blob.Service, sc cache.SignaturesCache) *RouterCtx {
+func NewRouterCtx(r *gin.Engine, bs blob.Service, sc infra.SignaturesCache) *RouterCtx {
 	return &RouterCtx{
 		r:               r,
 		blobService:     bs,

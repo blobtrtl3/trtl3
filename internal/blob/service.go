@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/infra/cache"
+	"github.com/blobtrtl3/trtl3/internal/infra"
 	"github.com/blobtrtl3/trtl3/internal/shared"
 	"github.com/blobtrtl3/trtl3/pkg/domain"
 )
@@ -24,13 +24,13 @@ type Service interface {
 
 type service struct {
 	repo *Repository
-	signaturesCache cache.SignaturesCache
+	signaturesCache infra.SignaturesCache
 	queue       *Queue
 }
 
 func NewService(
 	r *Repository,
-	sc cache.SignaturesCache,
+	sc infra.SignaturesCache,
 	q *Queue,
 ) Service {
 	return &service{

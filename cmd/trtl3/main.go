@@ -8,8 +8,7 @@ import (
 
 	"github.com/blobtrtl3/trtl3/internal/blob"
 	"github.com/blobtrtl3/trtl3/internal/http/router"
-	"github.com/blobtrtl3/trtl3/internal/infra/cache"
-	"github.com/blobtrtl3/trtl3/internal/infra/db"
+	"github.com/blobtrtl3/trtl3/internal/infra"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +19,7 @@ import (
 func main() {
 	r := gin.Default()
 
-	conn := db.NewDbConn()
+	conn := infra.NewDbConn()
 	defer conn.Close()
 
 	var path = "blobs"
@@ -30,7 +29,7 @@ func main() {
 	}
 
 	blobRepo := blob.NewRepository(conn, path)
-	signaturesCache := cache.NewMemSignaturesCache()
+	signaturesCache := infra.NewMemSignaturesCache()
 
 	workersStr := os.Getenv("WORKERS")
 	workers := 10 // default value

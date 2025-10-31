@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/infra/cache"
+	"github.com/blobtrtl3/trtl3/internal/infra"
 	"github.com/gin-gonic/gin"
 )
 
-func SignMiddleware(s cache.SignaturesCache) gin.HandlerFunc {
+func SignMiddleware(s infra.SignaturesCache) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sign := c.Query("sign")
 
