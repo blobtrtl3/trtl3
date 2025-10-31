@@ -1,6 +1,6 @@
 package cache
 
-import "github.com/blobtrtl3/trtl3/internal/domain"
+import "github.com/blobtrtl3/trtl3/pkg/domain"
 
 type SignaturesCache interface {
 	Set(key string, val domain.Signature)

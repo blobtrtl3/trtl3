@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/blobtrtl3/trtl3/internal/domain"
+	"github.com/blobtrtl3/trtl3/pkg/domain"
 	"github.com/blobtrtl3/trtl3/internal/shared"
 )
 

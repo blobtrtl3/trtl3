@@ -4,7 +4,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/blobtrtl3/trtl3/internal/domain"
+	"github.com/blobtrtl3/trtl3/pkg/domain"
 	"github.com/blobtrtl3/trtl3/internal/engine"
 )
 
