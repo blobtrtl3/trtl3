@@ -6,13 +6,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/engine"
+	"github.com/blobtrtl3/trtl3/internal/blob"
 	"github.com/blobtrtl3/trtl3/internal/http/router"
 	"github.com/blobtrtl3/trtl3/internal/infra/cache"
 	"github.com/blobtrtl3/trtl3/internal/infra/db"
 	"github.com/blobtrtl3/trtl3/internal/jobs"
-	"github.com/blobtrtl3/trtl3/internal/queue"
-	"github.com/blobtrtl3/trtl3/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,7 +29,7 @@ func main() {
 		log.Fatalf("Could not create directory to save blobs, reason: %s", err)
 	}
 
-	blobEngine := engine.NewBlobEngine(conn, path)
+	blobRepo := blob.NewRepository(conn, path)
 	signaturesCache := cache.NewMemSignaturesCache()
 
 	workersStr := os.Getenv("WORKERS")
@@ -54,13 +52,13 @@ func main() {
 		}
 	}
 
-	blobQueue := queue.NewBlobQueue(workers, blobEngine)
+	blobQueue := blob.NewQueue(workers, blobRepo)
 
-	blobService := service.NewBlobService(blobEngine, signaturesCache, blobQueue)
+	blobService := blob.NewService(blobRepo, signaturesCache, blobQueue)
 
 	router.NewRouterCtx(r, blobService, signaturesCache).SetupRouter()
 
-	job := jobs.NewJobs(blobEngine, path, signaturesCache)
+	job := jobs.NewJobs(blobRepo, path, signaturesCache)
 	go job.Start(time.Duration(jobInterval) * time.Minute) // take interval from env
 
 	r.Run(":7713")

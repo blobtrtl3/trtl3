@@ -3,29 +3,28 @@ package router
 import (
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/http/handler"
+	"github.com/blobtrtl3/trtl3/internal/blob"
 	"github.com/blobtrtl3/trtl3/internal/http/middleware"
 	"github.com/blobtrtl3/trtl3/internal/infra/cache"
-	"github.com/blobtrtl3/trtl3/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type RouterCtx struct {
 	r               *gin.Engine
-	BlobService     service.BlobService
+	blobService     blob.Service
 	signaturesCache cache.SignaturesCache
 }
 
-func NewRouterCtx(r *gin.Engine, bs service.BlobService, sc cache.SignaturesCache) *RouterCtx {
+func NewRouterCtx(r *gin.Engine, bs blob.Service, sc cache.SignaturesCache) *RouterCtx {
 	return &RouterCtx{
 		r:               r,
-		BlobService:     bs,
+		blobService:     bs,
 		signaturesCache: sc,
 	}
 }
 
 func (rctx *RouterCtx) SetupRouter() {
-	blobHandler := handler.NewBlobHandler(rctx.BlobService)
+	handler := blob.NewHandler(rctx.blobService)
 
 	// Health check endpoint (no authentication required)
 	rctx.r.GET("/health", func(c *gin.Context) {
@@ -38,18 +37,18 @@ func (rctx *RouterCtx) SetupRouter() {
 
 	protected := rctx.r.Group("/blobs", middleware.AuthMiddleware())
 	{
-		protected.POST("", blobHandler.Save)
-		protected.GET("", blobHandler.FindByBucket)
-		protected.GET("/:bucket/:id", blobHandler.FindUnique)
-		protected.DELETE("/:bucket/:id", blobHandler.Delete)
+		protected.POST("", handler.Save)
+		protected.GET("", handler.FindByBucket)
+		protected.GET("/:bucket/:id", handler.FindUnique)
+		protected.DELETE("/:bucket/:id", handler.Delete)
 
-		protected.GET("/download/:bucket/:id", blobHandler.Download)
+		protected.GET("/download/:bucket/:id", handler.Download)
 
-		protected.POST("/sign", blobHandler.Sign)
+		protected.POST("/sign", handler.Sign)
 	}
 
 	serve := rctx.r.Group("/b", middleware.SignMiddleware(rctx.signaturesCache))
 	{
-		serve.GET("", blobHandler.Serve)
+		serve.GET("", handler.Serve)
 	}
 }

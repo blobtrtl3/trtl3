@@ -6,19 +6,19 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/engine"
+	"github.com/blobtrtl3/trtl3/internal/blob"
 	"github.com/blobtrtl3/trtl3/internal/infra/cache"
 	"github.com/blobtrtl3/trtl3/internal/shared"
 )
 
 type Jobs struct {
-	blobEngine      *engine.BlobEngine
+	blobRepo      *blob.Repository
 	signaturesCache cache.SignaturesCache
 	dir             string
 }
 
-func NewJobs(be *engine.BlobEngine, dir string, sc cache.SignaturesCache) *Jobs {
-	return &Jobs{blobEngine: be, dir: dir, signaturesCache: sc}
+func NewJobs(br *blob.Repository, dir string, sc cache.SignaturesCache) *Jobs {
+	return &Jobs{blobRepo: br, dir: dir, signaturesCache: sc}
 }
 
 func (j *Jobs) Start(interval time.Duration) {
@@ -33,7 +33,7 @@ func (j *Jobs) Start(interval time.Duration) {
 }
 
 func (j *Jobs) cleanOrphans() {
-	blobsinfos, err := j.blobEngine.FindAll()
+	blobsinfos, err := j.blobRepo.FindAll()
 	if err != nil {
 		log.Printf("[job] error while finding blobs infos: %s", err)
 		return
@@ -45,7 +45,7 @@ func (j *Jobs) cleanOrphans() {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			log.Printf("[job] orphan found (id: %s, bucket: %s)", bi.ID, bi.Bucket)
 
-			_, err := j.blobEngine.Delete(bi.Bucket, bi.ID)
+			_, err := j.blobRepo.Delete(bi.Bucket, bi.ID)
 			if err != nil {
 				log.Printf("[job] error deleting orphan: %s", err)
 			}

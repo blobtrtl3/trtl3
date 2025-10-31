@@ -1,5 +1,5 @@
+package blob
 // TODO: do better error messages
-package service
 
 import (
 	"fmt"
@@ -7,14 +7,12 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/pkg/domain"
-	"github.com/blobtrtl3/trtl3/internal/engine"
 	"github.com/blobtrtl3/trtl3/internal/infra/cache"
-	"github.com/blobtrtl3/trtl3/internal/queue"
 	"github.com/blobtrtl3/trtl3/internal/shared"
+	"github.com/blobtrtl3/trtl3/pkg/domain"
 )
 
-type BlobService interface {
+type Service interface {
 	Save(bucket, mime string, size int64, r io.Reader) (*domain.BlobInfo, error)
 	FindByBucket(bucket string) ([]domain.BlobInfo, error)
 	FindUnique(bucket, id string) (*domain.BlobInfo, error)
@@ -24,25 +22,25 @@ type BlobService interface {
 	Sign(bucket, id string, TTL int, once bool) (string, error)
 }
 
-type BlobServiceImpl struct {
-	blobEngine      *engine.BlobEngine
+type service struct {
+	repo *Repository
 	signaturesCache cache.SignaturesCache
-	blobQueue       *queue.BlobQueue
+	queue       *Queue
 }
 
-func NewBlobService(
-	be *engine.BlobEngine,
+func NewService(
+	r *Repository,
 	sc cache.SignaturesCache,
-	bq *queue.BlobQueue,
-) BlobService {
-	return &BlobServiceImpl{
-		blobEngine:      be,
+	q *Queue,
+) Service {
+	return &service{
+		repo: r,
 		signaturesCache: sc,
-		blobQueue:       bq,
+		queue:       q,
 	}
 }
 
-func (bs *BlobServiceImpl) Save(bucket, mime string, size int64, r io.Reader) (*domain.BlobInfo, error) {
+func (s *service) Save(bucket, mime string, size int64, r io.Reader) (*domain.BlobInfo, error) {
 	blobInfo := &domain.BlobInfo{
 		ID:        shared.GenShortID(),
 		Bucket:    bucket,
@@ -51,19 +49,19 @@ func (bs *BlobServiceImpl) Save(bucket, mime string, size int64, r io.Reader) (*
 		Size:      size, // NOTE: size in bytes value
 	}
 
-	if err := bs.blobQueue.Append(blobInfo, r); err != nil {
+	if err := s.queue.Append(blobInfo, r); err != nil {
 		return &domain.BlobInfo{}, err
 	}
 
 	return blobInfo, nil
 }
 
-func (bs *BlobServiceImpl) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
+func (s *service) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
 	if bucket == "" {
 		return []domain.BlobInfo{}, fmt.Errorf("the bucket field sent is empty")
 	}
 
-	blobsInfos, err := bs.blobEngine.FindByBucket(bucket)
+	blobsInfos, err := s.repo.FindByBucket(bucket)
 	if err != nil {
 		return []domain.BlobInfo{}, err
 	}
@@ -75,12 +73,12 @@ func (bs *BlobServiceImpl) FindByBucket(bucket string) ([]domain.BlobInfo, error
 	return blobsInfos, nil
 }
 
-func (bs *BlobServiceImpl) FindUnique(bucket, id string) (*domain.BlobInfo, error) {
+func (s *service) FindUnique(bucket, id string) (*domain.BlobInfo, error) {
 	if id == "" || bucket == "" {
 		return &domain.BlobInfo{}, fmt.Errorf("the bucket or id field is empty %s", bucket)
 	}
 
-	blobInfo, err := bs.blobEngine.FindUnique(bucket, id)
+	blobInfo, err := s.repo.FindUnique(bucket, id)
 	if err != nil {
 		return &domain.BlobInfo{}, err
 	}
@@ -88,12 +86,12 @@ func (bs *BlobServiceImpl) FindUnique(bucket, id string) (*domain.BlobInfo, erro
 	return blobInfo, nil
 }
 
-func (bs *BlobServiceImpl) Download(bucket, id string) ([]byte, error) {
+func (s *service) Download(bucket, id string) ([]byte, error) {
 	if id == "" || bucket == "" {
 		return []byte{}, fmt.Errorf("the bucket or id field is empty %s", bucket)
 	}
 
-	b, err := bs.blobEngine.Download(bucket, id)
+	b, err := s.repo.Download(bucket, id)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -101,12 +99,12 @@ func (bs *BlobServiceImpl) Download(bucket, id string) ([]byte, error) {
 	return b, nil
 }
 
-func (bs *BlobServiceImpl) Delete(bucket, id string) (bool, error) {
+func (s *service) Delete(bucket, id string) (bool, error) {
 	if id == "" || bucket == "" {
 		return false, fmt.Errorf("the bucket or id field is empty %s", bucket)
 	}
 
-	_, err := bs.blobEngine.Delete(bucket, id)
+	_, err := s.repo.Delete(bucket, id)
 	if err != nil {
 		return false, err
 	}
@@ -120,12 +118,12 @@ type ServeInfo struct {
 	Path string
 }
 
-func (bs *BlobServiceImpl) Serve(bucket, id string) (*ServeInfo, error) {
+func (s *service) Serve(bucket, id string) (*ServeInfo, error) {
 	if id == "" || bucket == "" {
 		return &ServeInfo{}, fmt.Errorf("the bucket or id field is empty %s", bucket)
 	}
 
-	info, err := bs.blobEngine.FindUnique(bucket, id)
+	info, err := s.repo.FindUnique(bucket, id)
 	if err != nil {
 		return &ServeInfo{}, err
 	}
@@ -139,15 +137,15 @@ func (bs *BlobServiceImpl) Serve(bucket, id string) (*ServeInfo, error) {
 	}, nil
 }
 
-func (bs *BlobServiceImpl) Sign(bucket, id string, TTL int, once bool) (string, error) {
-	if _, err := bs.blobEngine.FindUnique(bucket, id); err != nil {
+func (s *service) Sign(bucket, id string, TTL int, once bool) (string, error) {
+	if _, err := s.repo.FindUnique(bucket, id); err != nil {
 		return "", err
 	}
 
 	now := time.Now()
 	signature := fmt.Sprintf("%s%s", shared.GenShortID(), now.Format("050204")) // format to SSDDMM
 
-	bs.signaturesCache.Set(
+	s.signaturesCache.Set(
 		signature,
 		domain.Signature{
 			Bucket: bucket,

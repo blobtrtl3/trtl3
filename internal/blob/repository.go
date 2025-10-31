@@ -1,4 +1,4 @@
-package engine
+package blob
 
 import (
 	"database/sql"
@@ -10,20 +10,20 @@ import (
 	"github.com/blobtrtl3/trtl3/internal/shared"
 )
 
-type BlobEngine struct {
+type Repository struct {
 	db  *sql.DB
 	dir string
 }
 
-func NewBlobEngine(db *sql.DB, dir string) *BlobEngine {
-	return &BlobEngine{
+func NewRepository(db *sql.DB, dir string) *Repository {
+	return &Repository{
 		db:  db,
 		dir: dir,
 	}
 }
 
-func (be *BlobEngine) Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, error) {
-	tx, err := be.db.Begin()
+func (r *Repository) Save(blobInfo *domain.BlobInfo, ior io.Reader) (bool, error) {
+	tx, err := r.db.Begin()
 	if err != nil {
 		return false, err
 	}
@@ -41,14 +41,14 @@ func (be *BlobEngine) Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, error)
 		return false, err
 	}
 
-	out, err := os.Create(filepath.Join(be.dir, shared.GenBlobName(blobInfo.Bucket, blobInfo.ID)))
+	out, err := os.Create(filepath.Join(r.dir, shared.GenBlobName(blobInfo.Bucket, blobInfo.ID)))
 	if err != nil {
 		tx.Rollback()
 		return false, err
 	}
 	defer out.Close()
 
-	if _, err := io.Copy(out, r); err != nil {
+	if _, err := io.Copy(out, ior); err != nil {
 		tx.Rollback()
 		return false, err
 	}
@@ -60,8 +60,8 @@ func (be *BlobEngine) Save(blobInfo *domain.BlobInfo, r io.Reader) (bool, error)
 	return true, nil
 }
 
-func (be *BlobEngine) FindAll() ([]domain.BlobInfo, error) {
-	rows, err := be.db.Query("SELECT * FROM blobsinfo")
+func (r *Repository) FindAll() ([]domain.BlobInfo, error) {
+	rows, err := r.db.Query("SELECT * FROM blobsinfo")
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +82,8 @@ func (be *BlobEngine) FindAll() ([]domain.BlobInfo, error) {
 	return blobsInfos, nil
 }
 
-func (be *BlobEngine) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
-	rows, err := be.db.Query("SELECT * FROM blobsinfo WHERE bucket=?", bucket)
+func (r *Repository) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
+	rows, err := r.db.Query("SELECT * FROM blobsinfo WHERE bucket=?", bucket)
 	if err != nil {
 		return nil, err
 	}
@@ -104,10 +104,10 @@ func (be *BlobEngine) FindByBucket(bucket string) ([]domain.BlobInfo, error) {
 	return blobsInfos, nil
 }
 
-func (be *BlobEngine) FindUnique(bucket string, id string) (*domain.BlobInfo, error) {
+func (r *Repository) FindUnique(bucket string, id string) (*domain.BlobInfo, error) {
 	var blobInfo domain.BlobInfo
 
-	if err := be.db.QueryRow("SELECT * FROM blobsinfo WHERE bucket=? AND id=?", bucket, id).Scan(
+	if err := r.db.QueryRow("SELECT * FROM blobsinfo WHERE bucket=? AND id=?", bucket, id).Scan(
 		&blobInfo.ID,
 		&blobInfo.Bucket,
 		&blobInfo.Mime,
@@ -120,8 +120,8 @@ func (be *BlobEngine) FindUnique(bucket string, id string) (*domain.BlobInfo, er
 	return &blobInfo, nil
 }
 
-func (be *BlobEngine) Download(bucket string, id string) ([]byte, error) {
-	blob, err := os.ReadFile(filepath.Join(be.dir, shared.GenBlobName(bucket, id)))
+func (r *Repository) Download(bucket string, id string) ([]byte, error) {
+	blob, err := os.ReadFile(filepath.Join(r.dir, shared.GenBlobName(bucket, id)))
 	if err != nil {
 		return nil, err
 	}
@@ -129,8 +129,8 @@ func (be *BlobEngine) Download(bucket string, id string) ([]byte, error) {
 	return blob, nil
 }
 
-func (be *BlobEngine) Delete(bucket string, id string) (bool, error) {
-	tx, err := be.db.Begin()
+func (r *Repository) Delete(bucket string, id string) (bool, error) {
+	tx, err := r.db.Begin()
 	if err != nil {
 		return false, err
 	}
@@ -145,7 +145,7 @@ func (be *BlobEngine) Delete(bucket string, id string) (bool, error) {
 		return false, err
 	}
 
-	if err := os.Remove(filepath.Join(be.dir, shared.GenBlobName(bucket, id))); err != nil {
+	if err := os.Remove(filepath.Join(r.dir, shared.GenBlobName(bucket, id))); err != nil {
 		tx.Rollback()
 		return false, err
 	}

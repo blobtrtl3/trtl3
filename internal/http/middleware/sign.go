@@ -30,7 +30,7 @@ func SignMiddleware(s cache.SignaturesCache) gin.HandlerFunc {
 			return
 		}
 
-		if signature.Once == true {
+		if signature.Once {
 			s.Delete(sign)
 		}
 

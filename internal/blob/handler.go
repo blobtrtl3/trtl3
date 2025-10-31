@@ -1,20 +1,19 @@
-package handler
+package blob
 
 import (
 	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
-type BlobHandler struct {
-	blobService service.BlobService
+type Handler struct {
+	blobService Service
 }
 
-func NewBlobHandler(bs service.BlobService) *BlobHandler {
-	return &BlobHandler{blobService: bs}
+func NewHandler(s Service) *Handler {
+	return &Handler{blobService: s}
 }
 
 type saveBlobReq struct {
@@ -30,7 +29,7 @@ type saveBlobReq struct {
 // @Param        blob formData file true "Blob file"
 // @Success      201 {object} domain.BlobInfo
 // @Router       /blobs [post]
-func (bh *BlobHandler) Save(c *gin.Context) {
+func (h *Handler) Save(c *gin.Context) {
 	var req saveBlobReq
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -51,7 +50,7 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 	}
 	defer fileBlob.Close()
 
-	blobInfo, err := bh.blobService.Save(
+	blobInfo, err := h.blobService.Save(
 		req.Bucket,
 		blobMultipart.Header.Get("Content-Type"),
 		blobMultipart.Size, // NOTE: size in bytes value
@@ -73,10 +72,10 @@ func (bh *BlobHandler) Save(c *gin.Context) {
 // @Param        bucket query string true "Bucket name"
 // @Success      200 {object} []domain.BlobInfo
 // @Router       /blobs [get]
-func (bh *BlobHandler) FindByBucket(c *gin.Context) {
+func (h *Handler) FindByBucket(c *gin.Context) {
 	bucket := c.Query("bucket")
 
-	blobsInfos, err := bh.blobService.FindByBucket(bucket)
+	blobsInfos, err := h.blobService.FindByBucket(bucket)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s", bucket)})
 		return
@@ -99,11 +98,11 @@ func (bh *BlobHandler) FindByBucket(c *gin.Context) {
 // @Param 			 id path string true "Blob id"
 // @Success      200 {object} domain.BlobInfo
 // @Router       /blobs/{bucket}/{id} [get]
-func (bh *BlobHandler) FindUnique(c *gin.Context) {
+func (h *Handler) FindUnique(c *gin.Context) {
 	bucket := c.Param("bucket")
 	id := c.Param("id")
 
-	blobInfo, err := bh.blobService.FindUnique(bucket, id)
+	blobInfo, err := h.blobService.FindUnique(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s with id: %s", bucket, id)})
 		return
@@ -121,11 +120,11 @@ func (bh *BlobHandler) FindUnique(c *gin.Context) {
 // @Param 			 id path string true "Blob id"
 // @Success 		 200 {file} file "Binary file"
 // @Router       /blobs/download/{bucket}/{id} [get]
-func (bh *BlobHandler) Download(c *gin.Context) {
+func (h *Handler) Download(c *gin.Context) {
 	bucket := c.Param("bucket")
 	id := c.Param("id")
 
-	blobBytes, err := bh.blobService.Download(bucket, id)
+	blobBytes, err := h.blobService.Download(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob in bucket: %s with id: %s", bucket, id)})
 		return
@@ -148,11 +147,11 @@ func (bh *BlobHandler) Download(c *gin.Context) {
 // @Param 			 id path string true "Blob id"
 // @Success      200
 // @Router       /blobs/{bucket}/{id} [get]
-func (bh *BlobHandler) Delete(c *gin.Context) {
+func (h *Handler) Delete(c *gin.Context) {
 	bucket := c.Param("bucket")
 	id := c.Param("id")
 
-	_, err := bh.blobService.Delete(bucket, id)
+	_, err := h.blobService.Delete(bucket, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("could not find blob by in bucket: %s with id: %s", bucket, id)})
 		return
@@ -168,7 +167,7 @@ func (bh *BlobHandler) Delete(c *gin.Context) {
 // @Param 			 sign path string true "sign"
 // @Success      200
 // @Router       /b [get]
-func (bh *BlobHandler) Serve(c *gin.Context) {
+func (h *Handler) Serve(c *gin.Context) {
 	bucket, exists := c.Get("bucket")
 	if !exists {
 		c.JSON(http.StatusNotFound, gin.H{"message": "blob not found"})
@@ -181,7 +180,7 @@ func (bh *BlobHandler) Serve(c *gin.Context) {
 		return
 	}
 
-	serveInfo, err := bh.blobService.Serve(bucket.(string), id.(string))
+	serveInfo, err := h.blobService.Serve(bucket.(string), id.(string))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "we had an error, sorry try again"})
 		return
@@ -208,7 +207,7 @@ type signBlobReq struct {
 // @Param        request body signBlobReq true "Blob sign request"
 // @Success      201
 // @Router       /blobs/sign [post]
-func (bh *BlobHandler) Sign(c *gin.Context) {
+func (h *Handler) Sign(c *gin.Context) {
 	var req signBlobReq
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -217,7 +216,7 @@ func (bh *BlobHandler) Sign(c *gin.Context) {
 		return
 	}
 
-	signature, err := bh.blobService.Sign(
+	signature, err := h.blobService.Sign(
 		req.Bucket,
 		req.ID,
 		req.TTL,
