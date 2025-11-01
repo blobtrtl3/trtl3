@@ -1,4 +1,5 @@
 package blob
+
 // TODO: do better error messages
 
 import (
@@ -23,9 +24,9 @@ type Service interface {
 }
 
 type service struct {
-	repo *Repository
+	repo            *Repository
 	signaturesCache infra.SignaturesCache
-	queue       *Queue
+	queue           *Queue
 }
 
 func NewService(
@@ -34,9 +35,9 @@ func NewService(
 	q *Queue,
 ) Service {
 	return &service{
-		repo: r,
+		repo:            r,
 		signaturesCache: sc,
-		queue:       q,
+		queue:           q,
 	}
 }
 

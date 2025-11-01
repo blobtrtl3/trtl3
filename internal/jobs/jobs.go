@@ -12,7 +12,7 @@ import (
 )
 
 type Jobs struct {
-	blobRepo      *blob.Repository
+	blobRepo        *blob.Repository
 	signaturesCache infra.SignaturesCache
 	dir             string
 }

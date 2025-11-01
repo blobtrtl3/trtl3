@@ -18,18 +18,18 @@ type Task struct {
 }
 
 type Queue struct {
-	redis      *redis.Client
-	wg         *sync.WaitGroup
+	redis    *redis.Client
+	wg       *sync.WaitGroup
 	blobRepo *Repository
-	ctx context.Context
+	ctx      context.Context
 }
 
 func NewQueue(br *Repository, r *redis.Client, ctx context.Context) *Queue {
 	queue := &Queue{
-		redis:      r,
-		wg:         &sync.WaitGroup{},
+		redis:    r,
+		wg:       &sync.WaitGroup{},
 		blobRepo: br,
-		ctx: ctx,
+		ctx:      ctx,
 	}
 
 	return queue
@@ -65,13 +65,13 @@ func (q *Queue) SetupWorkers(workers int) {
 					continue
 				}
 
- 				if _, err := q.blobRepo.Save(task.Info, task.Blob); err != nil {
+				if _, err := q.blobRepo.Save(task.Info, task.Blob); err != nil {
 					fmt.Print(err)
 					continue
 				}
 
 				fmt.Printf("worker id[%d]", id)
 			}
-		}(i+1)
+		}(i + 1)
 	}
 }
