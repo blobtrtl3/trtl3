@@ -34,7 +34,6 @@ func main() {
 	redisClient := infra.NewRedistClient(ctx)
 
 	blobRepo := blob.NewRepository(conn, path)
-	signaturesCache := infra.NewMemSignaturesCache()
 
 	workersStr := os.Getenv("WORKERS")
 	workers := 10 // default value
@@ -59,11 +58,11 @@ func main() {
 	blobQueue := blob.NewQueue(blobRepo, redisClient, ctx)
 	blobQueue.SetupWorkers(workers)
 
-	blobService := blob.NewService(blobRepo, signaturesCache, blobQueue)
+	blobService := blob.NewService(blobRepo, redisClient, blobQueue)
 
-	router.NewRouterCtx(r, blobService, signaturesCache).SetupRouter()
+	router.NewRouterCtx(r, blobService, redisClient).SetupRouter()
 
-	job := jobs.NewJobs(blobRepo, path, signaturesCache)
+	job := jobs.NewJobs(blobRepo, path, redisClient)
 	go job.Start(time.Duration(jobInterval) * time.Minute) // take interval from env
 
 	r.Run(":7713")

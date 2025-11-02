@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/blobtrtl3/trtl3/internal/infra"
 	"github.com/blobtrtl3/trtl3/internal/shared"
 	"github.com/blobtrtl3/trtl3/pkg/domain"
+	"github.com/redis/go-redis/v9"
 )
 
 type Service interface {
@@ -25,18 +25,18 @@ type Service interface {
 
 type service struct {
 	repo            *Repository
-	signaturesCache infra.SignaturesCache
+	redis *redis.Client
 	queue           *Queue
 }
 
 func NewService(
 	r *Repository,
-	sc infra.SignaturesCache,
+	re *redis.Client,
 	q *Queue,
 ) Service {
 	return &service{
 		repo:            r,
-		signaturesCache: sc,
+		redis: re,
 		queue:           q,
 	}
 }
@@ -146,15 +146,30 @@ func (s *service) Sign(bucket, id string, TTL int, once bool) (string, error) {
 	now := time.Now()
 	signature := fmt.Sprintf("%s%s", shared.GenShortID(), now.Format("050204")) // format to SSDDMM
 
-	s.signaturesCache.Set(
+	// s.signaturesCache.Set(
+	// 	signature,
+	// 	domain.Signature{
+	// 		Bucket: bucket,
+	// 		ID:     id,
+	// 		TTL:    now.Add(time.Duration(TTL) * time.Minute),
+	// 		Once:   once,
+	// 	},
+	// )
+
+	err := s.redis.Set(
+		s.queue.ctx, // TODO: i should take the context from queu or pass directly in service
 		signature,
 		domain.Signature{
 			Bucket: bucket,
-			ID:     id,
-			TTL:    now.Add(time.Duration(TTL) * time.Minute),
-			Once:   once,
+			ID: id,
+			TTL: time.Now(), // TTL really makes sense in the signature domain
+			Once: once, // same for once
 		},
-	)
+		time.Duration(TTL) * time.Minute,
+	).Err()
+	if err != nil {
+		// TODO: handle this
+	}
 
 	return signature, nil
 }

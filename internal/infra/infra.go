@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/blobtrtl3/trtl3/pkg/domain"
 	_ "github.com/marcboeker/go-duckdb/v2"
 	"github.com/redis/go-redis/v9"
 )
@@ -41,38 +40,3 @@ func NewRedistClient(ctx context.Context) *redis.Client {
 	})
 }
 
-type SignaturesCache interface {
-	Set(key string, val domain.Signature)
-	Get(key string) *domain.Signature
-	Delete(key string)
-	FindAll() []string
-}
-
-type MemSignaturesCache map[string]domain.Signature
-
-func NewMemSignaturesCache() SignaturesCache {
-	return MemSignaturesCache{}
-}
-
-func (ms MemSignaturesCache) Set(key string, val domain.Signature) {
-	ms[key] = val
-}
-
-func (ms MemSignaturesCache) Get(key string) *domain.Signature {
-	if sig, ok := ms[key]; ok {
-		return &sig
-	}
-	return nil
-}
-
-func (ms MemSignaturesCache) Delete(key string) {
-	delete(ms, key)
-}
-
-func (ms MemSignaturesCache) FindAll() []string {
-	keys := make([]string, 0, len(ms))
-	for key := range ms {
-		keys = append(keys, key)
-	}
-	return keys
-}

@@ -1,24 +1,26 @@
 package jobs
 
 import (
+	"context"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/blobtrtl3/trtl3/internal/blob"
-	"github.com/blobtrtl3/trtl3/internal/infra"
 	"github.com/blobtrtl3/trtl3/internal/shared"
+	"github.com/redis/go-redis/v9"
 )
 
 type Jobs struct {
 	blobRepo        *blob.Repository
-	signaturesCache infra.SignaturesCache
+	redis *redis.Client
 	dir             string
+	ctx context.Context
 }
 
-func NewJobs(br *blob.Repository, dir string, sc infra.SignaturesCache) *Jobs {
-	return &Jobs{blobRepo: br, dir: dir, signaturesCache: sc}
+func NewJobs(br *blob.Repository, dir string, r *redis.Client) *Jobs {
+	return &Jobs{blobRepo: br, dir: dir, redis: r}
 }
 
 func (j *Jobs) Start(interval time.Duration) {
@@ -28,7 +30,6 @@ func (j *Jobs) Start(interval time.Duration) {
 	for {
 		<-ticker.C
 		j.cleanOrphans()
-		j.cleanSignatures()
 	}
 }
 
@@ -53,10 +54,3 @@ func (j *Jobs) cleanOrphans() {
 	}
 }
 
-func (j *Jobs) cleanSignatures() {
-	for _, key := range j.signaturesCache.FindAll() {
-		if j.signaturesCache.Get(key).TTL.Compare(time.Now()) <= 0 {
-			j.signaturesCache.Delete(key)
-		}
-	}
-}

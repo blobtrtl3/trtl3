@@ -1,25 +1,27 @@
 package router
 
 import (
+	"context"
 	"time"
 
 	"github.com/blobtrtl3/trtl3/internal/blob"
 	"github.com/blobtrtl3/trtl3/internal/http/middleware"
-	"github.com/blobtrtl3/trtl3/internal/infra"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 )
 
 type RouterCtx struct {
 	r               *gin.Engine
 	blobService     blob.Service
-	signaturesCache infra.SignaturesCache
+	redis *redis.Client
+	ctx context.Context
 }
 
-func NewRouterCtx(r *gin.Engine, bs blob.Service, sc infra.SignaturesCache) *RouterCtx {
+func NewRouterCtx(r *gin.Engine, bs blob.Service, re *redis.Client) *RouterCtx {
 	return &RouterCtx{
 		r:               r,
 		blobService:     bs,
-		signaturesCache: sc,
+		redis: re,
 	}
 }
 
@@ -47,7 +49,7 @@ func (rctx *RouterCtx) SetupRouter() {
 		protected.POST("/sign", handler.Sign)
 	}
 
-	serve := rctx.r.Group("/b", middleware.SignMiddleware(rctx.signaturesCache))
+	serve := rctx.r.Group("/b", middleware.SignMiddleware(rctx.ctx, rctx.redis))
 	{
 		serve.GET("", handler.Serve)
 	}
